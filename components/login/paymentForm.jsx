@@ -14,6 +14,7 @@ import Switch from '@/components/forms/switch/switch';
 import { addBilling } from "@/data/api/register/bilingInformation/add";
 import { BillingInfromationCommand } from "@/domain/command/billing_information_command";
 import { useLoading } from "../loading/loading_context";
+import { NextButton } from "./NextButton";
 // import SignUpButtons from "../signUpButtons/signUpButtons";
 
 const PaymentForm = ({ onBack, onRegistrationSuccess }) => {
@@ -163,9 +164,10 @@ const PaymentForm = ({ onBack, onRegistrationSuccess }) => {
                         <a href=""> Terms of Service</a> and <a href="">Privacy Policy.</a>
                     </p>
                 </div>
-                <div className={styles.submitButtons}>
+                <div className={styles.buttonLine}>
                     {/* <button className={styles.cancel} type='button' onClick={onBack}>Back</button> */}
-                    <button type="submit">Save</button>
+                    <button onClick={onRegistrationSuccess}>Skip</button>
+                    <NextButton type="submit" />
                     {/* <RegistationSuccessModal/> */}
                 </div>
             </form>

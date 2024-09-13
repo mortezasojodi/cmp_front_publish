@@ -209,6 +209,11 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
     return <div>Loading Google Maps...</div>;
   }
 
+  const sanitizePhoneNumber = (value) => {
+    return value.replace(/\D/g, "");  // Removes all non-digit characters
+  };
+
+
   return (
     <>
       <Modal
@@ -327,7 +332,12 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
           <Controller
             name="phoneNumber"
             control={control}
-            rules={{ required: true }}
+            rules={{
+              required: true, validate: (value) => {
+                const sanitizedValue = sanitizePhoneNumber(value);
+                return sanitizedValue.length >= 10 || "Phone number must be 10 digits";
+              },
+            }}
             render={({ field }) => (
               <PhoneInput
                 {...field}
@@ -339,7 +349,7 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
                 defaultCountry="US"
                 placeholder="Enter phone number"
                 onChange={(value) => field.onChange(value)}
-                maxLength={10}
+                maxLength={14}
               />
             )}
           />

@@ -29,6 +29,7 @@ import { IoLogInOutline } from "react-icons/io5";
 import { AppConfig } from "@/shared/app_config";
 import { NextButton } from "./NextButton";
 import { APP_ROUTES } from "@/shared/route/app_route";
+import AppRouter from "next/dist/client/components/app-router";
 
 export const Title = ({ title }) => {
   return <h1>{title}</h1>;
@@ -115,6 +116,10 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
     }
   };
 
+  const sanitizePhoneNumber = (value) => {
+    return value.replace(/\D/g, "");  // Removes all non-digit characters
+  };
+
   return (
     <>
       <Title title={"Basic Information"} />
@@ -183,7 +188,13 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
           <Controller
             name="phoneNumber"
             control={control}
-            rules={{ required: true }}
+            rules={{
+              required: true, validate: (value) => {
+
+                const sanitizedValue = sanitizePhoneNumber(value);
+                return sanitizedValue.length >= 10 || "Phone number must be 10 digits";
+              },
+            }}
             render={({ field }) => (
               <PhoneInput
                 {...field}
@@ -195,7 +206,7 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
                 defaultCountry="US"
                 placeholder="Enter phone number"
                 onChange={(value) => field.onChange(value)}
-                maxLength={10}
+                maxLength={14}
               />
             )}
           />
@@ -322,7 +333,16 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
           <Controller
             name="secondPhoneNumber"
             control={control}
-            rules={{ required: false }}
+            rules={{
+              required: false,
+              validate: (value) => {
+                if (!value || value.length == 0) {
+                  return null;
+                }
+                const sanitizedValue = sanitizePhoneNumber(value);
+                return sanitizedValue.length >= 10 || "Phone number must be 10 digits";
+              },
+            }}
             render={({ field }) => (
               <PhoneInput
                 {...field}
@@ -333,8 +353,10 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
                 }
                 defaultCountry="US"
                 placeholder="Enter secondary phone number"
-                onChange={(value) => field.onChange(value)}
-                maxLength={10}
+                onChange={(value) => {
+                  field.onChange(value)
+                }}
+                maxLength={14}
               />
             )}
           />
@@ -409,11 +431,12 @@ const SignUpForm = ({ currentstep }) => {
   };
 
   const handleRegistrationSuccess = () => {
-    setRegistrationSuccess(true);
-    setTimeout(() => {
+    replace(APP_ROUTES.Splash);
+    // setRegistrationSuccess(true);
+    // setTimeout(() => {
 
-      push("/dashboard", undefined, { shallow: true });
-    }, 4000);
+    //   push("/dashboard", undefined, { shallow: true });
+    // }, 4000);
   };
 
   return (

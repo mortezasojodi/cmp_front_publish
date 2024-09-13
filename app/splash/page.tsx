@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { RotatingLines } from "react-loader-spinner";
 import { AppConfig, AppConfigHeader } from "../../shared/app_config";
-import { statusApi } from "../../data/api/status_api";
+import { statusApi } from "../../data/api/status/status_api";
 import { APP_ROUTES } from "../../shared/route/app_route";
 
 const SplashPage = () => {

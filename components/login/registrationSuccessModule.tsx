@@ -7,12 +7,13 @@ import { useRouter } from 'next/navigation';
 import { IoIosAddCircle, IoIosArrowRoundForward } from 'react-icons/io';
 import { reSendApi } from '@/data/api/register/company/resend';
 import toast from 'react-hot-toast';
+import { useLoading } from '../loading/loading_context';
 
 const RegistationSuccessModal = () => {
   const { replace } = useRouter();
   const [secondsRemaining, setSecondsRemaining] = useState(180);
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
-
+  const { setLoading } = useLoading();
 
   useEffect(() => {
     if (secondsRemaining > 0) {
@@ -27,15 +28,22 @@ const RegistationSuccessModal = () => {
 
 
   async function reSend() {
-    var result = await reSendApi();
-    result.fold(
-      (error) => {
-        toast.error(error.message);
-      },
-      (data) => {
-        setSecondsRemaining(180);
-      }
-    );
+
+    try {
+      setLoading(true);
+      var result = await reSendApi();
+      result.fold(
+        (error) => {
+          toast.error(error.message);
+        },
+        (data) => {
+          setSecondsRemaining(180);
+        }
+      );
+    } finally {
+      setLoading(false);
+
+    }
 
   }
 
@@ -67,7 +75,7 @@ const RegistationSuccessModal = () => {
           <h1>Check your email for the activation link</h1>
           <h1>{secondsRemaining != 0 && convertMin(secondsRemaining, true)}</h1>
           <div className={styles.buttonLine} >
-            <button className={styles.nextButton} onClick={() => { AppConfig.logOut(replace) }} disabled={!isButtonEnabled}>
+            <button className={styles.nextButton} onClick={() => { reSend(); }} disabled={!isButtonEnabled}>
               Resend Activation Link
             </button>
           </div>

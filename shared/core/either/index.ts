@@ -65,7 +65,16 @@ export class CusomerError extends Error {
   constructor(message?: string) {
     super(message);
     this.name = "CustomerError";
-    // Ensuring the prototype chain is correct for 'instanceof' checks.
+
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
+export class UnAuthorize extends Error {
+  constructor(message?: string) {
+    super(message);
+    this.name = "UnAuthorize";
+
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }

@@ -6,8 +6,6 @@ import React from 'react';
 import Image from 'next/image';
 import { RxCross2 } from "react-icons/rx";
 import { FiFileText } from "react-icons/fi";
-import PhoneInput from 'react-phone-number-input';
-import { SignUpCommand } from '@/domain/command/signUp_command';
 import styles from "./signUp.module.css"
 import RegistationSuccessModal from './registrationSuccessModule'
 import PaymentForm from './paymentForm';

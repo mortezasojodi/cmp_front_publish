@@ -1,4 +1,4 @@
-import { right, left, Either, CusomerError } from '@/shared/core/either';
+import { right, left, Either, CusomerError, UnAuthorize } from '@/shared/core/either';
 import { BaseResponse } from '@/shared/core/response/api_response';
 import { AppConfig, AppConfigHeader } from '@/shared/app_config';
 import { Netwrok } from '@/shared/network/api_constants';
@@ -14,13 +14,18 @@ export async function getAllOperationalAddress(): Promise<Either<Error, Operatio
             method: 'GET',
             headers: header,
         });
+        if (response.status == 401) {
+            return left(
+                new UnAuthorize(String_Const.UnAuthorize));
+        }
         const data = await response.json();
         const result: BaseResponse<OperationalAddressEntity[]> = data;
 
         if (result.Success) {
             return right(result.Data);
         } else {
-            return left(new CusomerError(result.Message));
+            return left(
+                new CusomerError(result.Message));
         }
     } catch (error) {
         return left(new Error(String_Const.Error));

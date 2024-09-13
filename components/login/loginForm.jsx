@@ -17,12 +17,13 @@ import { LoginCommand } from "@/domain/command/login_command";
 import { useLoading } from "../loading/loading_context";
 import toast from "react-hot-toast";
 import { CusomerError } from "@/shared/core/either";
+import { registartionStatusLogin } from "@/data/api/status/registartion_status_login";
 
 const LoginForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(null);
-  const { replace } = useRouter();
+  const { replace, push } = useRouter();
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const { setLoading } = useLoading();
 
@@ -43,7 +44,7 @@ const LoginForm = () => {
         }
       }, (registered) => {
         if (registered) {
-          replace(APP_ROUTES.Splash)
+          CheckRegistartion();
         } else {
           replace(APP_ROUTES.Activation)
         }
@@ -52,6 +53,52 @@ const LoginForm = () => {
       setLoading(false);
     }
   };
+
+  async function CheckRegistartion() {
+    var result = await registartionStatusLogin();
+    result.fold(
+      (s) => {
+        replace(APP_ROUTES.Splash)
+      },
+      (data) => {
+        appNavigator(data);
+      }
+    );
+  }
+
+  function appNavigator(status) {
+
+    switch (status) {
+      case "NotRegistered":
+        push(`${APP_ROUTES.SignUp}?step=${1}`, undefined);
+        toast.error("You are not registred");
+        break;
+      case "ProfessionalInformation":
+
+        push(`${APP_ROUTES.SignUp}?step=${2}`, undefined);
+        toast.error("Please Complete your registration!");
+        break;
+      case "DocumentSubmission":
+        push(`${APP_ROUTES.SignUp}?step=${3}`, undefined);
+        toast.error("Please Complete your registration!");
+        break;
+      case "BillingDetails":
+        push(`${APP_ROUTES.SignUp}?step=${4}`, undefined);
+        toast.error("Please Complete your registration!");
+        break;
+      case "NotActivate":
+        push(`${APP_ROUTES.Activation}`, undefined);
+        toast.error("Check your email for the activation link!");
+        break;
+      case "Registered":
+        push(`${APP_ROUTES.Dashboard}`, undefined);
+        break;
+
+      default:
+        break;
+    }
+  }
+
 
   let iconSize = 24;
 

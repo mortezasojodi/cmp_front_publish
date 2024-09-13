@@ -146,6 +146,10 @@ export default function addAdressMap({
 
   const isAddressFilled = !!address;
 
+  const sanitizePhoneNumber = (value) => {
+    return value.replace(/\D/g, "");  // Removes all non-digit characters
+  };
+
   return (
     <>
       <Modal
@@ -245,7 +249,12 @@ export default function addAdressMap({
           <Controller
             name="phoneNumber"
             control={control}
-            rules={{ required: true }}
+            rules={{
+              required: true, validate: (value) => {
+                const sanitizedValue = sanitizePhoneNumber(value);
+                return sanitizedValue.length >= 10 || "Phone number must be 10 digits";
+              },
+            }}
             render={({ field }) => (
               <PhoneInput
                 {...field}
@@ -257,7 +266,7 @@ export default function addAdressMap({
                 defaultCountry="US"
                 placeholder="Enter phone number"
                 onChange={(value) => field.onChange(value)}
-                maxLength={10}
+                maxLength={14}
               />
             )}
           />

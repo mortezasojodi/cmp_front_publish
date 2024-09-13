@@ -9,6 +9,9 @@ import { getAllOperationalAddress } from "@/data/api/dashboard/operationalAddres
 import toast from "react-hot-toast";
 import { AddressContext, AddressProvider, useAddress } from "@/components/address/address_context";
 import { useLoading } from "@/components/loading/loading_context";
+import { UnAuthorize } from "@/shared/core/either";
+import { useRouter } from "next/navigation";
+import { APP_ROUTES } from "@/shared/route/app_route";
 
 
 export default function Layout({ children }) {
@@ -18,6 +21,9 @@ export default function Layout({ children }) {
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
+
+  const { replace } = useRouter();
 
   useEffect(() => {
     fetch();
@@ -32,6 +38,9 @@ export default function Layout({ children }) {
       result.fold(
         (error) => {
           toast.error(error.message);
+          if (error instanceof UnAuthorize) {
+            replace(APP_ROUTES.Login)
+          }
         },
         (data) => {
           setAddresses(data)
