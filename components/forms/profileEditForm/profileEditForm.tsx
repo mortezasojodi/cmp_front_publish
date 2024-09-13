@@ -22,6 +22,9 @@ import { EditProfileCommand } from '@/domain/command/edit_profile_command';
 import { editCompany } from '@/data/api/register/company/edit';
 import { useLoading } from '@/components/loading/loading_context';
 import { getAllOperationalAddress } from '@/data/api/dashboard/operationalAddress/get_all';
+import { OtherCompanyLocationCommand } from '@/domain/command/other_company_location_command';
+import { deleteOperationalAddress } from '@/data/api/dashboard/operationalAddress/delete';
+import { deleteOtherAddressApi } from '@/data/api/dashboard/other_address/delete';
 
 const ProfileEditForm = () => {
 
@@ -30,6 +33,7 @@ const ProfileEditForm = () => {
   const [stateLocation, setStateLocation] = useState<StateStatus>(StateStatus.Initial);
   const [operationalAddress, setOperationalAddress] = useState<OperationalAddressEntity[]>([null]);
   const [openEditOtherAddressModal, setOpenEditOtherAddressModal] = useState<number>(null);
+  const [openEditOprAddressModal, setOpenEditOprAddressModal] = useState<number>(null);
   const { setLoading } = useLoading();
 
   var initialEditData = {
@@ -79,6 +83,7 @@ const ProfileEditForm = () => {
         setStateLocation(StateStatus.Success)
       }
     );
+
   }
 
 
@@ -121,17 +126,21 @@ const ProfileEditForm = () => {
     setModalIsOpenNew((prevState) => ({ ...prevState, [type]: false }));
   };
 
-  const addArray = (index, field, newItem) => {
-
-  };
-
-
-
-
-
-  const removeField = (groupIndex, field, item) => {
-
-  };
+  function setotherCommand(model: OperationalAddressEntity): OtherCompanyLocationCommand {
+    var command = new OtherCompanyLocationCommand(
+      "",
+      model.Lat,
+      model.Long,
+      "",
+      "",
+      model.FirstName,
+      model.LastName,
+      model.LocationPhone,
+      model.Id,
+      0,
+    );
+    return command;
+  }
 
   const removeOperationalAddress = (index) => {
     // setData((prevData) => {
@@ -163,26 +172,54 @@ const ProfileEditForm = () => {
         data.secondaryLastName,
         data.secondaryPhone
       );
-
       var result = await editCompany(command);
-
       result.fold(
         (error) => {
         },
         (data) => {
           setCompanyEntity(data)
-
         }
       );
     } finally {
       setLoading(false);
     }
-
   };
 
 
+  async function deleteOprAddress(params: number) {
+    try {
+      setLoading(true);
+      var result = await deleteOperationalAddress(params);
+      result.fold(
+        (error) => {
+        },
+        (data) => {
+          fetchLocation();
+        }
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function deleteOtherAddress(params: number) {
+    try {
+      setLoading(true);
+      var result = await deleteOtherAddressApi(params);
+      result.fold(
+        (error) => {
+        },
+        (data) => {
+          fetchLocation();
+        }
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const sanitizePhoneNumber = (value) => {
-    return value.replace(/\D/g, "");  // Removes all non-digit characters
+    return value.replace(/\D/g, "");
   };
 
   return (
@@ -289,7 +326,7 @@ const ProfileEditForm = () => {
                   defaultValue={initialEditData.secondaryFirstName}
                   type="text"
                   placeholder="First Name"
-                  {...register("secondaryFirstName", { required: true })}
+                  {...register("secondaryFirstName", { required: false })}
                 />
                 <input
                   id='secondaryLastName'
@@ -297,7 +334,7 @@ const ProfileEditForm = () => {
                   defaultValue={initialEditData.secondaryLastName}
                   type="text"
                   placeholder="Last Name"
-                  {...register("secondaryLastName", { required: true })}
+                  {...register("secondaryLastName", { required: false })}
                 />
               </div>
             </div>
@@ -339,13 +376,13 @@ const ProfileEditForm = () => {
                     <div className={styles.fakeInput}>
                       {operationalAddress.Address}
                       <div className={styles.inputIconButton}>
-                        <button type="button">
+                        <button type="button" onClick={() => setOpenEditOprAddressModal(operationalAddress.Id)}>
                           <LiaEdit
                             size={26}
                             style={{ color: "rgba(76, 142, 59, 1)" }}
                           />
                         </button>
-                        <button type="button" onClick={removeOperationalAddress}>
+                        <button type="button" onClick={() => deleteOprAddress(operationalAddress.Id)}>
                           <FiTrash
                             size={22}
                             style={{ color: "rgba(76, 142, 59, 1)" }}
@@ -354,6 +391,17 @@ const ProfileEditForm = () => {
                       </div>
                     </div>
                   </div>
+
+                  <AddAddressMap
+                    onSubmitAddress={(data) => {
+                      setOperationalAddress(data);
+                      setotherCommand(data);
+                    }}
+                    isOpen={openEditOprAddressModal == operationalAddress?.Id}
+                    onClose={() => setOpenEditOprAddressModal(null)}
+                    center={{ lat: operationalAddress.Lat, lng: operationalAddress.Long }}
+                    model={operationalAddress}
+                  />
                 </div>
 
                 <div className={styles.formSection}>
@@ -380,7 +428,7 @@ const ProfileEditForm = () => {
                               </button>
                               <button
                                 type="button"
-                                onClick={() => { }}
+                                onClick={() => { deleteOtherAddress(item.Id) }}
                               >
                                 <FiTrash
                                   size={22}
@@ -414,6 +462,7 @@ const ProfileEditForm = () => {
                       onClose={() => { closeModalNew('oilContainer') }}
                       center={getOperationalCenter(groupIndex)}
                       type={"Oil"}
+                      model={setotherCommand(operationalAddress)}
                       typeOfButton={"LOCATION"}
                       oprId={operationalAddress?.Id}
                     />
@@ -447,7 +496,7 @@ const ProfileEditForm = () => {
                               </button>
                               <button
                                 type="button"
-
+                                onClick={() => deleteOtherAddress(item.Id)}
                               >
                                 <FiTrash
                                   size={22}
@@ -486,6 +535,7 @@ const ProfileEditForm = () => {
                       center={getOperationalCenter(groupIndex)}
                       type={"Grease Trap"}
                       typeOfButton={"LOCATION"}
+                      model={setotherCommand(operationalAddress)}
                       oprId={operationalAddress?.Id}
                     />
                   </div></div>

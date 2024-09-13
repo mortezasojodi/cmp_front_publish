@@ -47,7 +47,10 @@ export const BusinessLicense = ({ onNext, onBack }) => {
     const { handleSubmit, formState: { errors } } = useFormContext();
 
     const onSubmit = async (data) => {
-
+        if (!file1 && !file2) {
+            toast.error("Upload files or Press Skip");
+            return;
+        }
         try {
             setLoading(true);
             var result = await addDcoument(new DocumentCommand(file1, file2))

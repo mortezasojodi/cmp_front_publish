@@ -23,6 +23,7 @@ import toast from "react-hot-toast";
 import { useLoading } from "../loading/loading_context";
 import { LocationCompanyEntity } from "@/domain/entity/location_company_entity";
 import { editOtherCompanyLocation } from "@/data/api/register/otherCompanyLocation/edit";
+import { init } from "next/dist/compiled/webpack/webpack";
 
 
 
@@ -82,7 +83,7 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
   } = useForm({
     defaultValues: {
       locationName: model?.Name,
-      selectAdress: "",
+      selectAdress: `${model?.Lat, model?.Long}`,
       comments: model?.Comment,
       contactFirstName: model?.PrimaryFirstName,
       contactLastName: model?.PrimaryLastName,
@@ -105,24 +106,38 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
 
   useEffect(() => {
     if (!isOpen) {
-
       setMarker(null);
       setSelectedValue(null);
+    } else {
+      if (model != null)
+        init(model)
     }
   }, [isOpen,]);
+
+
+  function init(model: OtherCompanyLocationCommand) {
+    handleSelectValue(model?.Capacity);
+    const lat = model?.Lat;
+    const lng = model?.Long;
+    setMarker({ lat, lng });
+    setValue("selectAdress", `${model?.Lat, model?.Long}`);
+  }
 
   const handleMapClick = useCallback((event) => {
     const lat = event.latLng.lat();
     const lng = event.latLng.lng();
     setMarker({ lat, lng });
+
   }, []);
 
   const handleSelectValue = (value) => {
+
     setSelectedValue(value);
     setValue("select", value);
   };
 
   const onSubmit = async (data) => {
+    var t = 1;
     try {
       setLoading(true);
       const completeData = {
@@ -238,7 +253,7 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
           id="google-map-script"
           mapContainerStyle={containerStyle}
           center={center}
-          zoom={16}
+          zoom={12}
           onClick={handleMapClick}
         >
           {marker && (
@@ -290,7 +305,7 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
                 <CustomSelector
                   options={options}
                   select={type === "Oil" ? "Oil Capacity" : "Trap Capacity"}
-                  initialValue={""}
+                  initialValue={selectedValue ?? ""}
                   selectValue={(value) => {
                     setSelectedValue(value);
                     field.onChange(value);
@@ -307,7 +322,7 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
               }`}
             placeholder="Enter text"
             rows={6}
-            {...register("comments", { required: true })}
+            {...register("comments", { required: false })}
           />
           <label className={styles.smallText}>Primary contact person:</label>
           <div className={styles.personInput}>

@@ -66,6 +66,7 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useFormContext();
   const [showPassword, setShowPassword] = useState(false);
@@ -73,6 +74,7 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
   let iconSize = 24;
   const { setLoading } = useLoading();
   const { push } = useRouter();
+  const password = watch("password");
 
   const onSubmit = async (data) => {
     try {
@@ -237,6 +239,7 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
               type={showPassword ? "text" : "password"}
               {...register("password", {
                 required: "Password is required",
+
                 minLength: {
                   value: 8,
                   message: "Password must be at least 8 characters long",
@@ -244,7 +247,7 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
                 pattern: {
                   value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
                   message:
-                    "Password must contain at least one uppercase letter, one lowercase letter, и one number",
+                    "Password must contain at least one uppercase letter, one lowercase letter, one number",
                 },
               })}
             />
@@ -257,6 +260,10 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
             </button>
           </div>
         </div>
+        {errors.password && (
+          <p className={styles.errortext}>{errors.password.message}</p>
+        )}
+
 
         <div className={styles.formSection}>
           <label htmlFor="RePassword">Confirm Password: </label>
@@ -270,6 +277,8 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
               type={showPassword ? "text" : "password"}
               {...register("repassword", {
                 required: "Password is required",
+                validate: (value) =>
+                  value === password || "Passwords do not match",
                 minLength: {
                   value: 8,
                   message: "Password must be at least 8 characters long",
@@ -277,10 +286,11 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
                 pattern: {
                   value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
                   message:
-                    "Password must contain at least one uppercase letter, one lowercase letter, и one number",
+                    "Password must contain at least one uppercase letter, one lowercase letter, one number",
                 },
               })}
             />
+
             <button type="button" onClick={togglePasswordVisibility}>
               {showPassword ? (
                 <PiEye size={iconSize} />
@@ -289,7 +299,12 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
               )}
             </button>
           </div>
+
         </div>
+
+        {errors.repassword && (
+          <p className={styles.errortext}>{errors.repassword.message}</p>
+        )}
 
         <div className={styles.formSection}>
           <label htmlFor="position">Position: </label>

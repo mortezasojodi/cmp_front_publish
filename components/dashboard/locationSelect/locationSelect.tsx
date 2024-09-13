@@ -12,7 +12,7 @@ export default function LocationSelect() {
   const toggling = () => setIsOpen(!isOpen);
 
   const onOptionClicked = value => () => {
-    setSelectedOption(value);
+    setSelectedAddresses(value);
     setIsOpen(false);
     console.log(value);
   };
@@ -21,8 +21,8 @@ export default function LocationSelect() {
     <div className={styles.dropDownContainer}>
       <div className={styles.dropDownHeader} onClick={toggling}>
         <div>
-          <h1>Location - {selectedOption || selectedAddresses?.Address}</h1>
-          <p>{selectedAddresses?.FirstName} {selectedAddresses?.LastName} {selectedAddresses?.CrossStreet}</p>
+          <h1>Location - {selectedAddresses?.Address}</h1>
+          <p>{selectedAddresses?.CrossStreet}</p>
         </div>
         <svg width="8" height="7" viewBox="0 0 8 7" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M4.86603 6.5C4.48113 7.16667 3.51887 7.16667 3.13397 6.5L0.535899 2C0.150999 
@@ -34,7 +34,7 @@ export default function LocationSelect() {
           <ul className={styles.dropDownList}>
             {addresses.map(option => (
               <li className={styles.listItem} onClick={onOptionClicked(option)} key={Math.random()}>
-                {option.Address}
+                {option.Address} - {selectedAddresses?.CrossStreet}
               </li>
             ))}
           </ul>

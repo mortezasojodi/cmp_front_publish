@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import PhoneInput from "react-phone-number-input";
 import { GoogleMap, OverlayView } from "@react-google-maps/api";
@@ -17,6 +17,8 @@ import toast from "react-hot-toast";
 import { OperationalAddressCommand } from "@/domain/command/operational_address_command";
 import { addOperationalAddress } from "@/data/api/register/operationalAddress/add";
 import { useLoading } from "../loading/loading_context";
+import { OperationalAddressEntity } from "@/domain/entity/operational_address_entity";
+import { editOperationalAddress } from "@/data/api/register/operationalAddress/edit";
 
 const libraries = ["places"];
 const containerStyle = {
@@ -25,13 +27,22 @@ const containerStyle = {
 };
 
 
-
-export default function addAdressMap({
+interface AddPointMapProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmitAddress: (data: any) => void;
+  center: { lat: number; lng: number };
+  model?: OperationalAddressEntity,
+}
+const addAdressMap: React.FC<AddPointMapProps> = ({
   center,
   isOpen,
   onClose,
   onSubmitAddress,
-}) {
+  model
+}) => {
+  const options = ["Restaurant", "Food processing company", "Other type"];
+
   const {
     register,
     handleSubmit,
@@ -40,10 +51,23 @@ export default function addAdressMap({
     formState: { errors, isDirty, dirtyFields },
     reset,
     watch,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      address: model?.Address,
+      latitude: model?.Lat,
+      longitude: model?.Long,
+      crossStreet: model?.CrossStreet,
+      county: model?.County,
+      phoneNumber: model?.LocationPhone,
+      select: options[model != null ? (model?.BusinessId - 1) : 0],
+      contactFirstName: model?.FirstName,
+      contactLastName: model?.LastName,
+    }
+  });
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState(null);
+
   const { setLoading } = useLoading();
 
   const [selectedValue, setSelectedValue] = useState(null);
@@ -74,8 +98,8 @@ export default function addAdressMap({
     if (!isOpen) {
       reset({
         address: "",
-        latitude: "",
-        longitude: "",
+        latitude: 0,
+        longitude: 0,
         crossStreet: "",
         county: "",
         phoneNumber: "",
@@ -83,36 +107,67 @@ export default function addAdressMap({
         contactFirstName: "",
         contactLastName: "",
       });
+    } else {
+      reset({
+        address: model?.Address,
+        latitude: model?.Lat,
+        longitude: model?.Long,
+        crossStreet: model?.CrossStreet,
+        county: model?.County,
+        phoneNumber: model?.LocationPhone,
+        select: options[model != null ? (model?.BusinessId - 1) : 0],
+        contactFirstName: model?.FirstName,
+        contactLastName: model?.LastName,
+      });
+      setSelectedValue(options[model != null ? (model?.BusinessId - 1) : 0])
     }
   }, [isOpen, reset]);
 
-  const mapCenter =
-    latitude && longitude
-      ? { lat: parseFloat(latitude), lng: parseFloat(longitude) }
-      : center;
+
+
+  const [mapCenter, setMapCenter] = useState({ lat: latitude ? (latitude) : center.lat, lng: longitude ? (longitude) : center.lng });
 
   const [formSubmitted, setFormSubmitted] = useState(false);
 
+  function selecType(params: string): number {
+    switch (params) {
+      case "Restaurant":
+        return 1;
+      case "Food processing company":
+        return 2;
+      default:
+        return 3;
+    }
+  }
+
+
+
   const handleSubmitAddress = async (data) => {
+    if (model != null) {
+      edit(data);
+    } else {
+      add(data);
+    }
+  };
 
 
+  async function add(data) {
     try {
       setLoading(true);
-      // if (!data.address) {
-      //   toast.error("Please fill the address correctly");
-      //   return;
-      // }
-
+      if (!data.address) {
+        toast.error("Please fill the address correctly");
+        return;
+      }
       var operationalAddressCommand = new OperationalAddressCommand(
-        "", //Address: string,
-        data.crossStreet, //CrossStreet: string,
-        data.county, //County: string,
-        data.phoneNumber, //LocationPhone: string,
-        1, //BusinessId: number,
-        data.contactFirstName, //FirstName: string,
-        data.contactLastName, //LastName: string,
-        0, //Lat: number,
-        0 //Long: number
+        data.address,
+        data.crossStreet,
+        data.county,
+        data.phoneNumber,
+        selecType(data.select),
+        data.contactFirstName,
+        data.contactLastName,
+        mapCenter.lat,
+        mapCenter.lng
       );
       var result = await addOperationalAddress(operationalAddressCommand);
       result.fold(
@@ -120,21 +175,55 @@ export default function addAdressMap({
           toast.error(error.message);
         },
         (res) => {
-          setFormSubmitted(true);
-          onSubmitAddress(data);
-          console.log(data);
-          onClose();
-          reset();
-          setFormSubmitted(false);
+          onSuccess(data, res);
         }
       );
-
     } finally {
       setLoading(false);
     }
+  }
 
 
-  };
+  async function edit(data) {
+    try {
+      setLoading(true);
+      if (!data.address) {
+        toast.error("Please fill the address correctly");
+      }
+      var operationalAddressCommand = new OperationalAddressCommand(
+        data.address,
+        data.crossStreet,
+        data.county,
+        data.phoneNumber,
+        selecType(data.select),
+        data.contactFirstName,
+        data.contactLastName,
+        mapCenter.lat,
+        mapCenter.lng
+      );
+
+      var result = await editOperationalAddress(operationalAddressCommand, model!.Id);
+      result.fold(
+        (error) => {
+          toast.error(error.message);
+        },
+        (res) => {
+          onSuccess(data, res);
+        }
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  function onSuccess(data, res) {
+    setFormSubmitted(true);
+    onSubmitAddress(res);
+    onClose();
+    reset();
+    setFormSubmitted(false);
+  }
 
   const onCancel = () => {
     onClose();
@@ -142,7 +231,14 @@ export default function addAdressMap({
     setFormSubmitted(false);
   };
 
-  const options = ["Restaurant", "Food processing company", "Other type"];
+
+  const handleMapClick = useCallback((event) => {
+    const lat = event.latLng.lat();
+    const lng = event.latLng.lng();
+    setValue("latitude", lat);
+    setValue("longitude", lng);
+  }, []);
+
 
   const isAddressFilled = !!address;
 
@@ -178,6 +274,7 @@ export default function addAdressMap({
               setValue("address", address);
               setValue("latitude", latitude);
               setValue("longitude", longitude);
+              setMapCenter({ lat: latitude, lng: longitude })
             }}
             defaultValue=""
             loader={loader}
@@ -187,12 +284,13 @@ export default function addAdressMap({
             mapContainerStyle={containerStyle}
             center={mapCenter}
             zoom={12}
+            onClick={handleMapClick}
           >
             {isAddressFilled && !isNaN(latitude) && !isNaN(longitude) && (
               <OverlayView
                 position={{
-                  lat: parseFloat(latitude),
-                  lng: parseFloat(longitude),
+                  lat: (latitude),
+                  lng: (longitude),
                 }}
                 mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
               >
@@ -223,8 +321,9 @@ export default function addAdressMap({
                   setValue("address", address);
                   setValue("latitude", latitude);
                   setValue("longitude", longitude);
+                  setMapCenter({ lat: latitude, lng: longitude })
                 }}
-                defaultValue=""
+                defaultValue={model?.Address}
                 loader={loader}
               />
             </div>
@@ -234,6 +333,7 @@ export default function addAdressMap({
             className={`${styles.formInput} ${errors.crossStreet && styles.inputError
               }`}
             type="text"
+            defaultValue={model?.CrossStreet}
             placeholder="Cross street"
             {...register("crossStreet")}
           />
@@ -242,6 +342,7 @@ export default function addAdressMap({
             className={`${styles.formInput} ${errors.county && styles.inputError
               }`}
             type="text"
+            defaultValue={model?.County}
             placeholder="County"
             {...register("county")}
           />
@@ -280,7 +381,7 @@ export default function addAdressMap({
                 <CustomSelector
                   options={options}
                   select={"specify whether"}
-                  initialValue={""}
+                  initialValue={selectedValue ?? ""}
                   selectValue={(value) => {
                     setSelectedValue(value);
                     field.onChange(value);
@@ -311,7 +412,7 @@ export default function addAdressMap({
               Cansel
             </button>
             <button type="submit">
-              Add ADDRESS <GoPlusCircle size={24} />
+              {model == null ? "Add ADDRESS" : "Update ADDRESS"} <GoPlusCircle size={24} />
             </button>
           </div>
         </form>
@@ -319,3 +420,5 @@ export default function addAdressMap({
     </>
   );
 }
+
+export default React.memo(addAdressMap);

@@ -9,6 +9,7 @@ export type OperationalAddressEntity = {
     CrossStreet?: string;
     LocationPhone?: string;
     BusinessId?: number;
+    County?: string;
     FirstName?: string;
     LastName?: string;
     LocationCompany: LocationCompanyEntity[] | null
