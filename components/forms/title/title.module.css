@@ -1,0 +1,9 @@
+.title{
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.title h1{
+    padding-bottom: 24px;
+}

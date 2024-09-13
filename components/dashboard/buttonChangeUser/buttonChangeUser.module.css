@@ -1,0 +1,21 @@
+.changeButton{
+    text-transform: uppercase;
+    border: 1px solid rgba(228, 228, 228, 1);
+    padding: 15px 36px 15px 36px;
+    background-color: var(--bg);
+    color: white;
+    gap: 8px;
+    border-radius: 50px;
+    font-size: 14px;
+    line-height: 14px;
+    letter-spacing: 0.15em;
+
+    display: flex;
+    align-items: center;
+}
+
+
+.changeButton:hover{
+    background-color: white;
+    color: var(--bg);
+}

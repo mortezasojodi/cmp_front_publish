@@ -1,0 +1,89 @@
+.table_container {
+    border: 1px solid rgba(228, 228, 228, 1); /* Добавляем границу к контейнеру */
+    border-radius: 5px; /* Скругляем углы контейнера */
+    overflow: hidden; /* Обрезаем скругленные углы за пределами контейнера */
+  }
+  
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+  
+.table th, .table td {
+border: 1px solid rgba(228, 228, 228, 1);
+}
+
+.table, 
+.table td, 
+.sortButton,
+.buttonPay {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    text-align: left;
+    padding: 12px;
+    
+}
+
+.table th{ 
+    width: 25%;
+    color: rgba(102, 102, 102, 1);
+    background-color: rgba(245, 245, 245, 1);
+   
+}
+
+.table td{
+    font-weight: 600;
+}
+
+
+.sortButton{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background-color: initial;
+    color: rgba(102, 102, 102, 1);
+    border: 0px;
+}
+
+.statusPaid{
+    text-transform: capitalize;
+    display: flex;
+    color: rgba(76, 142, 59, 1);
+    gap: 4px;
+    justify-content: center;
+}
+
+.statusPay{
+    padding: 4px !important;
+}
+
+.buttonPay{
+    background: rgba(76, 142, 59, 1);
+    color: white;
+    padding: 8px 16px 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: capitalize;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    border: 0px;
+}
+/* 
+.table{
+    border-collapse: collapse;
+    border: 1px solid rgba(228, 228, 228, 1);
+}
+
+.table tr{
+    
+}
+
+.table th, .table td{
+    padding: 12px 14px 12px 14px;
+} */

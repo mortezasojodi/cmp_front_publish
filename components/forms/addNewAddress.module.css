@@ -1,0 +1,96 @@
+.form{
+   width: 100%;
+   display: flex;
+   gap: 16px;
+   flex-direction: column;
+   flex-wrap: nowrap;
+   align-items: center;
+   margin-top: 32px;
+}
+
+.formSection{
+   width: 100%;
+   display: flex;
+   align-items: center;
+   gap: 24px;    
+}
+
+
+.informSection{
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   gap: 16px;
+}
+
+.formSection label{
+   font-size: 16px;
+   font-weight: 600;
+   line-height: 24px;
+   text-align: left;
+   min-width: 190px;
+}
+
+.fakeInput{
+   display: flex;
+   gap: 16px;
+   flex-direction: row;
+   justify-content: space-between;
+   align-items: center;
+   border-radius: 10px;
+   border: 1px solid rgba(228, 228, 228, 1);
+   background-color: #fff;
+   padding: 12px 16px 12px 16px;
+}
+
+.inputIconButton{
+   display: flex;
+   flex-direction: row;
+}
+.inputIconButton button{
+   border: none;
+   background-color: transparent;
+   padding-left: 10px;
+}
+
+.addLocationButton{
+    font-size: 16px;
+    line-height: 24px;
+    width: 100% !important;
+    padding: 12px 16px 12px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(228, 228, 228, 1);
+    background-color: #fff;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.buttonLine button{
+   display: flex;
+   align-items: center;
+   padding: 15px 36px;
+   border-radius: 50px;
+   font-size: 14px;
+   line-height: 14px;
+   letter-spacing: 0.15em;
+   text-transform: uppercase;
+   background: #4C8E3B80;
+  
+   color: #fff;
+   border: 1px solid rgba(228, 228, 228, 1)
+}
+
+.buttonLine button:hover{
+   background: #4C8E3B;
+}
+
+.buttonLine{
+   width: 100%;
+   display: flex;
+   flex-direction: row;
+   justify-content: flex-end;
+   gap: 16px;
+}

@@ -1,0 +1,193 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+.modalContent {
+    background: white;
+    border-radius: 10px;
+}
+
+.header{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 13px 0px 28px 0px;
+    align-items: flex-start;
+}
+.header button{
+    border: 0;
+    background-color: transparent;
+}
+
+.inform{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    width: 100%;
+    gap: 8px;
+}
+
+/* .inform label{
+    
+}
+   */
+
+.cancelForm{
+    width: 100%;
+}   
+.radioButtonLabel {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: normal;
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid rgba(228, 228, 228, 1);
+    cursor: pointer;
+    border-radius: 10px;
+    white-space: nowrap;
+    align-items: center;
+    align-self: stretch; /* Растягиваем элемент вдоль главной оси */
+}
+
+
+.selectedOption{
+    border: 1px solid #4C8E3B;
+    background: #F6F9F5;
+}
+
+.canselForm{
+    display: flex;
+    gap: 16px;
+    flex-direction: column;
+}
+
+.radioButtonLabel input{
+    width: auto !important;
+} 
+
+.error{
+    color: red;
+}
+
+.submitButtons{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 16px;
+    padding: 24px 32px 24px 32px;
+    border-top: 1px solid #E4E4E4
+}
+
+.submitButtons button{
+    padding: 20px 36px 20px 36px;
+    gap: 10px;
+    border-radius: 50px;
+    background-color: #fff;
+    border: 1px solid #E4E4E4;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.submitButtons button:hover{
+    background-color: #E4E4E4;
+}
+
+.canselService{
+    display: flex;
+    align-items: center;
+    color: #D57300 !important;
+    background: #D573001A !important;
+    border: 1px solid #D573004D !important;
+}
+.canselService:hover{
+    background-color: #D573004D !important;
+}
+
+.home {
+    background: #4C8E3B;
+    width: calc(100% - 48px); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 36px; 
+    gap: 8px;
+    border-radius: 55px;
+    margin: 24px 24px; 
+    border-top: 1px solid #E4E4E4;
+    border: 0;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    color: white;
+    text-transform: uppercase;
+}
+
+  /* .container{
+    padding: 32px;
+    display: flex;
+    gap: 16px;
+    flex-direction: column;
+    width: 60vh;
+}
+
+.modaloverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+
+  .modalcontent {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    gap: 16px;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+  }
+
+.canselForm{
+    
+    display: flex;
+    gap: 16px;
+    flex-direction: column;
+}
+.radioButtonLabel {
+    font-size: 16px;
+    font-weight: normal !important;
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid rgba(228, 228, 228, 1);
+    cursor: pointer;
+    border-radius: 10px;
+    width: auto;
+    white-space: nowrap;
+    align-items: center;
+  }
+
+.radioButtonLabel input{
+    width: auto !important;
+} */

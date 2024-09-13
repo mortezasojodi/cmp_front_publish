@@ -1,0 +1,39 @@
+.container{
+  width: 100%;
+}
+
+.paymentOption {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 16px 8px 16px;
+}
+  
+.selected {
+  border-color: rgba(76, 142, 59, 1);
+}
+
+.input[type='radio'], .input:focus {
+  width: 20px;
+  accent-color: rgba(76, 142, 59, 1);
+}
+
+.label{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.cardInformation{
+  font-weight: 600;
+}
+
+.cardInformation p{
+  font-weight: normal;
+  color: rgba(142, 142, 147, 1);
+}
+
