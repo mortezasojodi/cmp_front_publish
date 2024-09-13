@@ -11,12 +11,11 @@ import { SignUpCommand } from '@/domain/command/signUp_command';
 import styles from "./signUp.module.css"
 import RegistationSuccessModal from './registrationSuccessModule'
 import PaymentForm from './paymentForm';
-import { signUp } from '@/data/api/company/signUp';
 import { PiEye, PiEyeClosed } from 'react-icons/pi';
 import toast, { Toaster } from 'react-hot-toast';
 import { NextButton } from './nextButton';
 
-import { addDcoument } from '@/data/api/document/add';
+import { addDcoument } from '@/data/api/register/document/add';
 import { DocumentCommand } from '@/domain/command/document_command';
 import { useLoading } from '../loading/loading_context';
 import { Title } from './signUp';

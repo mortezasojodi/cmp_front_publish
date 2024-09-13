@@ -16,7 +16,7 @@ import { SignUpCommand } from "@/domain/command/signUp_command";
 import styles from "./signUp.module.css";
 import RegistationSuccessModal from "./registrationSuccessModule";
 import PaymentForm from "./paymentForm";
-import { signUp } from "@/data/api/company/signUp";
+import { signUp } from "@/data/api/register/company/signUp";
 import { PiEye, PiEyeClosed } from "react-icons/pi";
 import toast, { Toaster } from "react-hot-toast";
 

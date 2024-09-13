@@ -11,11 +11,9 @@ import { IoCardOutline } from "react-icons/io5";
 
 // import PaymentOptions from "@/comments/forms/paymentOptions/paymentOptions";
 import Switch from '@/components/forms/switch/switch';
-import RegistationSuccessModal from './registrationSuccessModule'
 import { addBilling } from "@/data/api/register/bilingInformation/add";
 import { BillingInfromationCommand } from "@/domain/command/billing_information_command";
 import { useLoading } from "../loading/loading_context";
-import { getOperationalAddress } from "@/data/api/operationalAddress/get";
 // import SignUpButtons from "../signUpButtons/signUpButtons";
 
 const PaymentForm = ({ onBack, onRegistrationSuccess }) => {
