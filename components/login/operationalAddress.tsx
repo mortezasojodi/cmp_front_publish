@@ -23,17 +23,16 @@ import AddAddressMap from "@/components/mapsForm/addAdressMap";
 import RegistationSuccessModal from "./registrationSuccessModule";
 import AddPointMap from "../mapsForm/addPointMap";
 import PaymentForm from "./paymentForm";
-import { signUp } from "@/data/api/company/signUp";
 import { PiEye, PiEyeClosed } from "react-icons/pi";
 
 import toast, { Toaster } from "react-hot-toast";
 import { Title } from "./signUp";
-import { getOperationalAddress } from "@/data/api/operationalAddress/get";
 import { OperationalAddressEntity } from "@/domain/entity/operational_address_entity";
 import { NextButton } from "./nextButton";
-import { getOtherCompanyLocation } from "@/data/api/otherCompanyLocation/get";
 import { LocationCompanyEntity } from "@/domain/entity/location_company_entity";
 import { useLoading } from "../loading/loading_context";
+import { getOtherCompanyLocation } from "@/data/api/register/otherCompanyLocation/get";
+import { getOperationalAddress } from "@/data/api/register/operationalAddress/get";
 
 export const OperationalAddress = ({ onNext, onBack, operationalArray }) => {
 
