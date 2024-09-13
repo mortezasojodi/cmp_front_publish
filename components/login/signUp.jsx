@@ -27,7 +27,7 @@ import { Payment } from "./payment";
 import { useLoading } from "../loading/loading_context";
 import { IoLogInOutline } from "react-icons/io5";
 import { AppConfig } from "@/shared/app_config";
-import { NextButton } from "./nextButton";
+import { NextButton } from "./NextButton";
 import { APP_ROUTES } from "@/shared/route/app_route";
 
 export const Title = ({ title }) => {

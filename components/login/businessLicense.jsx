@@ -13,7 +13,7 @@ import RegistationSuccessModal from './registrationSuccessModule'
 import PaymentForm from './paymentForm';
 import { PiEye, PiEyeClosed } from 'react-icons/pi';
 import toast, { Toaster } from 'react-hot-toast';
-import { NextButton } from './nextButton';
+import { NextButton } from './NextButton';
 
 import { addDcoument } from '@/data/api/register/document/add';
 import { DocumentCommand } from '@/domain/command/document_command';

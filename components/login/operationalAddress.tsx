@@ -28,7 +28,7 @@ import { PiEye, PiEyeClosed } from "react-icons/pi";
 import toast, { Toaster } from "react-hot-toast";
 import { Title } from "./signUp";
 import { OperationalAddressEntity } from "@/domain/entity/operational_address_entity";
-import { NextButton } from "./nextButton";
+import { NextButton } from "./NextButton";
 import { LocationCompanyEntity } from "@/domain/entity/location_company_entity";
 import { useLoading } from "../loading/loading_context";
 import { getOtherCompanyLocation } from "@/data/api/register/otherCompanyLocation/get";
