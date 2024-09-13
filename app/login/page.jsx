@@ -4,8 +4,8 @@ import ForgotPasswordForm from "@/components/login/forgotPasswordForm"
 
 const LoginPage = () => {
   return (
-    
-      <LoginForm/>
+
+    <LoginForm />
 
   );
 };

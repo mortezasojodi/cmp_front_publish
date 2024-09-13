@@ -1,0 +1,16 @@
+import { LocationCompanyEntity } from "./location_company_entity";
+
+export type OperationalAddressEntity = {
+    Id?: number;
+    CompanyId?: number;
+    Lat?: number;
+    Long?: number;
+    Address?: string;
+    CrossStreet?: string;
+    LocationPhone?: string;
+    BusinessId?: number;
+    FirstName?: string;
+    LastName?: string;
+    LocationCompany: LocationCompanyEntity[] | null
+};
+

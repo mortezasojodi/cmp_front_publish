@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
-import { Combobox, ComboboxInput, ComboboxPopover, ComboboxList, ComboboxOption } from '@reach/combobox';
-import '@reach/combobox/styles.css';
-import styles from './addAdressMap.module.css'
+import React, { useEffect, useState } from "react";
+import usePlacesAutocomplete, {
+  getGeocode,
+  getLatLng,
+} from "use-places-autocomplete";
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxPopover,
+  ComboboxList,
+  ComboboxOption,
+} from "@reach/combobox";
+import "@reach/combobox/styles.css";
+import styles from "./addAdressMap.module.css";
 
-const libraries = ['places'];
+const libraries = ["places"];
 
-
-export function SearchBox({ onSelectAddress, defaultValue, loader}) {
+export function SearchBox({ onSelectAddress, defaultValue, loader }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState(null);
 
@@ -18,6 +26,7 @@ export function SearchBox({ onSelectAddress, defaultValue, loader}) {
         setIsLoaded(true);
       })
       .catch((error) => {
+        console.error("Failed to load Google Maps API:", error);
         setLoadError(error);
       });
   }, []);
@@ -26,7 +35,10 @@ export function SearchBox({ onSelectAddress, defaultValue, loader}) {
   if (loadError) return <div>Error loading</div>;
 
   return (
-    <ReadySearchBox onSelectAddress={onSelectAddress} defaultValue={defaultValue} />
+    <ReadySearchBox
+      onSelectAddress={onSelectAddress}
+      defaultValue={defaultValue}
+    />
   );
 }
 
@@ -41,8 +53,8 @@ function ReadySearchBox({ onSelectAddress, defaultValue }) {
 
   const handleChange = (e) => {
     setValue(e.target.value);
-    if (e.target.value === '') {
-      onSelectAddress('', null, null);
+    if (e.target.value === "") {
+      onSelectAddress("", null, null);
     }
   };
 
@@ -55,7 +67,7 @@ function ReadySearchBox({ onSelectAddress, defaultValue }) {
       const { lat, lng } = await getLatLng(results[0]);
       onSelectAddress(address, lat, lng);
     } catch (error) {
-      console.error('😱 Error:', error);
+      console.error("😱 Error:", error);
     }
   };
 
@@ -71,7 +83,7 @@ function ReadySearchBox({ onSelectAddress, defaultValue }) {
       />
       <ComboboxPopover>
         <ComboboxList>
-          {status === 'OK' &&
+          {status === "OK" &&
             data.map(({ place_id, description }) => (
               <ComboboxOption key={place_id} value={description} />
             ))}
