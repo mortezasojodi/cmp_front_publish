@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 // import { loginUser } from '@/app/utils/auth'; 
 import Link from 'next/link'
-import { loginApi } from '@/data/api/login_api';
+import { loginApi } from '@/data/api/user/login_api';
 import { APP_ROUTES } from "@/shared/route/app_route";
 import { LoginCommand } from "@/domain/command/login_command";
 import { useLoading } from "../loading/loading_context";
