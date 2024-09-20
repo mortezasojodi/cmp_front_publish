@@ -45,3 +45,16 @@ h1{
     line-height: normal;
   }
 }
+
+.deleteButton{
+  border: 2px solid rgb(228, 9, 9) !important;
+  color: rgb(228, 9, 9) !important;
+}
+.iconDelete{
+  color: rgb(228, 9, 9) !important;
+}
+
+.deleteButton:hover , .deleteButton:hover  .iconDelete {
+  background: rgb(209, 94, 94);
+  color:white !important;
+}

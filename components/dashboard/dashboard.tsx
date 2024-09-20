@@ -15,10 +15,11 @@ export default function Dashboard() {
 
   const { push } = useRouter();
 
-  const handleClick = (id) => {
-    console.log("Clicked ID:", id);
 
-    push("/dashboard/services", undefined);
+  const handleClick = (model: OperationalAddressEntity) => {
+
+
+    push(`/dashboard/newAddress?data=${JSON.stringify(model)}`, undefined);
     // setDelayedNavigation(true);
 
   };
@@ -38,11 +39,11 @@ export default function Dashboard() {
         </button>
       </div>
       <div>
-        {addresses.map((address, index) => (
+        {addresses.map((address: OperationalAddressEntity, index) => (
           <div
             key={index}
             className={styles.addressItem}
-            onClick={() => handleClick(index)}
+            onClick={() => handleClick(address)}
           >
             <span>{address.Address}</span>
             <p className={styles.addressInfo}>{address.Lat + " , " + address.Long}</p>

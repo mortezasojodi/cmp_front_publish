@@ -16,7 +16,7 @@ import { APP_ROUTES } from "@/shared/route/app_route";
 
 export default function Layout({ children }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { setAddresses, setSelectedAddresses } = useAddress();
+  const { refreshAdr } = useAddress();
   const { setLoading } = useLoading();
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -31,22 +31,10 @@ export default function Layout({ children }) {
 
 
   async function fetch() {
-
     setLoading(true);
     try {
-      var result = await getAllOperationalAddress();
-      result.fold(
-        (error) => {
-          toast.error(error.message);
-          if (error instanceof UnAuthorize) {
-            replace(APP_ROUTES.Login)
-          }
-        },
-        (data) => {
-          setAddresses(data)
-          setSelectedAddresses(data[0]);
-        }
-      );
+      await refreshAdr();
+
     } finally {
       setLoading(false);
     }

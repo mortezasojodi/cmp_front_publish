@@ -244,6 +244,10 @@
     border: 0px !important;
     color: #fff;
 }
+.nextButton:hover{
+    background: #5aab46  !important;;
+ }
+ 
 
 .buttonLine button{
     display: flex;

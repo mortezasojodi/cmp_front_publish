@@ -1,7 +1,7 @@
-    export type BaseResponse<T>= {
-        Data: T;
-        Success: boolean;
-        StatusCode: string;
-        Message: string;
-    
-    }
+export type BaseResponse<T> = {
+    Data: T;
+    Success: boolean;
+    StatusCode: string;
+    Message?: string;
+
+}

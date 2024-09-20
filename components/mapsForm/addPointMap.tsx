@@ -65,6 +65,9 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
   const [loadError, setLoadError] = useState(null);
   const [marker, setMarker] = useState(null);
 
+
+  const [mapCenter, setMapCenter] = useState({ lat: center.lat, lng: center.lng });
+
   const loader = new Loader({
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
     version: "weekly",
@@ -110,10 +113,29 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
       setSelectedValue(null);
     } else {
       if (model != null)
-        init(model)
+        init(model);
+      if (id == null)
+        setCurrentLocation();
     }
   }, [isOpen,]);
 
+
+  function setCurrentLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setMarker({ lat: latitude, lng: longitude });
+          setMapCenter({ lat: latitude, lng: longitude })
+        },
+        (error) => {
+          console.error("Error fetching location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  }
 
   function init(model: OtherCompanyLocationCommand) {
     handleSelectValue(model?.Capacity);
@@ -137,7 +159,6 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
   };
 
   const onSubmit = async (data) => {
-    var t = 1;
     try {
       setLoading(true);
       const completeData = {
@@ -252,7 +273,7 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
         <GoogleMap
           id="google-map-script"
           mapContainerStyle={containerStyle}
-          center={center}
+          center={mapCenter}
           zoom={12}
           onClick={handleMapClick}
         >

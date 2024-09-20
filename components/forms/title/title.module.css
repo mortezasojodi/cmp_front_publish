@@ -7,3 +7,11 @@
 .title h1{
     padding-bottom: 24px;
 }
+
+.titleBack{
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+}
+

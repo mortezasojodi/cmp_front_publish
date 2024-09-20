@@ -9,7 +9,7 @@ import { OperationalAddressEntity } from "@/domain/entity/operational_address_en
 
 export async function deleteOperationalAddress(
     Id: number
-): Promise<Either<Error, boolean>> {
+): Promise<Either<Error, BaseResponse<object>>> {
     try {
         var header = await AppConfigHeader.header();
         const response = await fetch(`${Netwrok.apiUrl}/OperationalAddress/${Id}`, {
@@ -20,7 +20,7 @@ export async function deleteOperationalAddress(
         const result: BaseResponse<object> = data;
 
         if (result.Success) {
-            return right(true);
+            return right(result);
         } else {
             return left(new CusomerError(result.Message));
         }

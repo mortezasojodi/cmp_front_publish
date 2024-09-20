@@ -30,7 +30,7 @@ const containerStyle = {
 interface AddPointMapProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmitAddress: (data: any) => void;
+  onSubmitAddress: (data: OperationalAddressEntity) => void;
   center: { lat: number; lng: number };
   model?: OperationalAddressEntity,
 }
@@ -120,10 +120,31 @@ const addAdressMap: React.FC<AddPointMapProps> = ({
         contactLastName: model?.LastName,
       });
       setSelectedValue(options[model != null ? (model?.BusinessId - 1) : 0])
+      if (model == null) {
+        setCurrentLocation();
+      }
     }
   }, [isOpen, reset]);
 
 
+
+  function setCurrentLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setValue("latitude", latitude);
+          setValue("longitude", longitude);
+          setMapCenter({ lat: latitude, lng: longitude })
+        },
+        (error) => {
+          console.error("Error fetching location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  }
 
   const [mapCenter, setMapCenter] = useState({ lat: latitude ? (latitude) : center.lat, lng: longitude ? (longitude) : center.lng });
 
@@ -286,7 +307,7 @@ const addAdressMap: React.FC<AddPointMapProps> = ({
             zoom={12}
             onClick={handleMapClick}
           >
-            {isAddressFilled && !isNaN(latitude) && !isNaN(longitude) && (
+            {!isNaN(latitude) && !isNaN(longitude) && (
               <OverlayView
                 position={{
                   lat: (latitude),
