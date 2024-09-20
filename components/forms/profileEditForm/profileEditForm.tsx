@@ -106,18 +106,6 @@ const ProfileEditForm = () => {
   });
 
 
-  const openModal = (groupIndex, type) => {
-    const updatedModalIsOpen = [...modalIsOpen];
-    updatedModalIsOpen[groupIndex] = { ...updatedModalIsOpen[groupIndex], [type]: true };
-    setModalIsOpen(updatedModalIsOpen);
-  };
-
-  const closeModal = (groupIndex, type) => {
-    const updatedModalIsOpen = [...modalIsOpen];
-    updatedModalIsOpen[groupIndex] = { ...updatedModalIsOpen[groupIndex], [type]: false };
-    setModalIsOpen(updatedModalIsOpen);
-  };
-
 
   const openModalNew = (type) => {
     setModalIsOpenNew((prevState) => ({ ...prevState, [type]: true }));
@@ -141,17 +129,6 @@ const ProfileEditForm = () => {
     );
     return command;
   }
-
-  const removeOperationalAddress = (index) => {
-    // setData((prevData) => {
-    //   const updatedAddresses = [...prevData.addresses];
-    //   updatedAddresses[index].operationalAddress = [];
-    //   return {
-    //     ...prevData,
-    //     addresses: updatedAddresses
-    //   };
-    // });
-  };
 
   const getOperationalCenter = (index) => {
     const operationalAddressSet = initialEditData.addresses[index];
@@ -394,8 +371,7 @@ const ProfileEditForm = () => {
 
                   <AddAddressMap
                     onSubmitAddress={(data) => {
-                      setOperationalAddress(data);
-                      setotherCommand(data);
+                      fetchLocation();
                     }}
                     isOpen={openEditOprAddressModal == operationalAddress?.Id}
                     onClose={() => setOpenEditOprAddressModal(null)}
