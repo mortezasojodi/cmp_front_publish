@@ -151,6 +151,7 @@ export default function EmergencyServiceForm() {
               rules={{ required: true }}
               render={({ field }) => (
                 <CustomSelector
+                  initialValue={selectedValue}
                   options={options}
                   select={"service"}
                   selectValue={(value) => {
@@ -212,7 +213,7 @@ export default function EmergencyServiceForm() {
         </div>
         <div className={styles.agreementText}>
           <div className={styles.question}>
-            <Switch active={true} />{" "}
+            <Switch active={true} onChange={() => { }} />{" "}
             <span>I agree with Terms and Conditions for this service</span>
           </div>
           <div className={styles.question}>
@@ -233,6 +234,7 @@ export default function EmergencyServiceForm() {
                 rules={{ required: true }}
                 render={({ field }) => (
                   <CustomSelector
+                    initialValue={selectedValue}
                     options={optionFrequency}
                     select={"service"}
                     selectValue={(value) => {
