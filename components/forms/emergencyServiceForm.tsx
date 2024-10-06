@@ -15,6 +15,11 @@ import SignUpButtons from "./signUpButtons/signUpButtons";
 // import MapScreen from './mapScreen/mapScreen';
 // import Dialog from './dialog/dialog';
 import CustomSelector from "./customSelect/customSelect";
+import { useAddress } from "../address/address_context";
+import { useLoading } from "../loading/loading_context";
+import { deleteOtherAddressApi } from "@/data/api/dashboard/other_address/delete";
+import { OperationalAddressEntity } from "@/domain/entity/operational_address_entity";
+import { OtherCompanyLocationCommand } from "@/domain/command/other_company_location_command";
 
 export default function EmergencyServiceForm() {
   const center = {
@@ -30,8 +35,10 @@ export default function EmergencyServiceForm() {
     trigger,
   } = useForm();
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const { setLoading } = useLoading();
   const [locations, setLocations] = useState([]);
   const [selectedValue, setSelectedValue] = useState(null);
+  const { selectedAddresses, refreshAdr } = useAddress();
 
   const addLocation = (type, data) => {
     const newLocations = [...locations, { type, data }];
@@ -48,9 +55,12 @@ export default function EmergencyServiceForm() {
   };
 
   useEffect(() => {
-    setValue("locationCount", locations.length);
-    setValue("location", locations);
-  }, [locations, setValue]);
+    if (selectedAddresses) {
+      setValue("locationCount", selectedAddresses.LocationCompany.length);
+      setValue("location", selectedAddresses.LocationCompany);
+      setLocations(selectedAddresses.LocationCompany);
+    }
+  }, [setValue, selectedAddresses]);
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -66,7 +76,7 @@ export default function EmergencyServiceForm() {
     setValue("location", locations);
     console.log(data);
     setTimeout(() => {
-      push("/dashboard/services", undefined, { shallow: true });
+      push("/dashboard/services", undefined);
     }, 3000);
   };
 
@@ -94,15 +104,46 @@ export default function EmergencyServiceForm() {
     "26x yr.",
   ];
 
+
+  function setotherCommand(model: OperationalAddressEntity): OtherCompanyLocationCommand {
+    var command = new OtherCompanyLocationCommand(
+      "",
+      model.Lat,
+      model.Long,
+      "",
+      "",
+      model.FirstName,
+      model.LastName,
+      model.LocationPhone,
+      model.Id,
+      0,
+    );
+    return command;
+  }
+
+  async function deleteOtherAddress(params: number) {
+    try {
+      setLoading(true);
+      var result = await deleteOtherAddressApi(params);
+      result.fold(
+        (error) => {
+        },
+        (data) => {
+          refreshAdr();
+        }
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <>
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.formSection}>
           <label htmlFor="service">Service:</label>
           <div
-            className={`${styles.selector} ${
-              errors.selectService && styles.inputError
-            }`}
+            className={`${styles.selector} ${errors.selectService && styles.inputError
+              }`}
           >
             <Controller
               name="selectService"
@@ -126,14 +167,14 @@ export default function EmergencyServiceForm() {
           <div className={styles.column}>
             {locations.map((item, index) => (
               <div key={index} className={styles.fakeInput}>
-                <p>{item.data.address}</p>
+                {item.Name}
                 <div className={styles.inputIconButton}>
-                  <button type="button">
+                  {/* <button type="button">
                     <LiaEdit
                       size={26}
                       style={{ color: "rgba(76, 142, 59, 1)" }}
                     />
-                  </button>
+                  </button> */}
                   <button type="button" onClick={() => removeLocation(index)}>
                     <FiTrash
                       size={22}
@@ -144,9 +185,8 @@ export default function EmergencyServiceForm() {
               </div>
             ))}
             <div
-              className={`${styles.dialogContainer} ${
-                errors.locationCount && styles.inputError
-              }`}
+              className={`${styles.dialogContainer} ${errors.locationCount && styles.inputError
+                }`}
             >
               <button
                 type="button"
@@ -184,9 +224,8 @@ export default function EmergencyServiceForm() {
           <div className={styles.formSection}>
             <label htmlFor="frequency">Frequency:</label>
             <div
-              className={`${styles.selector} ${
-                errors.frequency && styles.inputError
-              }`}
+              className={`${styles.selector} ${errors.frequency && styles.inputError
+                }`}
             >
               <Controller
                 name="frequency"
@@ -209,7 +248,7 @@ export default function EmergencyServiceForm() {
 
         <div className={styles.submitButtons}>
           <Link className={styles.cancel} href="/dashboard/services">
-            Cansel
+            Cancel
           </Link>
           <button type="submit">
             Place Order <FaRegFileAlt size={24} />

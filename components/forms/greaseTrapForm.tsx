@@ -16,8 +16,22 @@ import { IoLogInOutline } from "react-icons/io5";
 import Switch from "./switch/switch";
 import CustomSelector from "./customSelect/customSelect";
 import AddPointMap from "../mapsForm/addPointMap";
+import { getServiceAppointmentApi } from "@/data/api/service_appointment/get_service_appointment_api";
+import { useLoading } from "../loading/loading_context";
+import { useAddress } from "../address/address_context";
+import toast from "react-hot-toast";
+import { ServiceAppointmentEntity } from "@/domain/entity/service_appointment_entity";
+import { FrequencyEnum } from "@/domain/enum/frequency_enum";
+import { AddServiceAppointmentCommand } from "@/domain/command/service_appointment/add_service_appointment_command";
+import { addServiceAppointmentApi } from "@/data/api/service_appointment/add_service_appointment_api";
+import { ButtonsForm } from "./signUpButtons/signUpButtons";
+import { deleteServiceAppointmentApi } from "@/data/api/service_appointment/delete_service_appointment_api";
 
-const GreaseTrapForm = () => {
+type GreaseTrapFormProps = {
+  Id?: number | null;
+};
+
+const GreaseTrapForm = (prop: GreaseTrapFormProps) => {
   const center = {
     lat: 32.733131,
     lng: -117.189472,
@@ -47,6 +61,11 @@ const GreaseTrapForm = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [locations, setLocations] = useState([]);
   const [selectedValue, setSelectedValue] = useState(null);
+  const { setLoading } = useLoading();
+  const { selectedAddresses, refreshAdr } = useAddress();
+  const { back, push } = useRouter();
+
+  const [model, setModel] = useState<ServiceAppointmentEntity>(null);
 
   const addLocation = (type, data) => {
     const newLocations = [...locations, { type, data }];
@@ -65,7 +84,14 @@ const GreaseTrapForm = () => {
   useEffect(() => {
     setValue("locationCount", locations.length);
     setValue("location", locations);
-  }, [locations, setValue]);
+    if (selectedAddresses) {
+      if (prop.Id) {
+        getById(prop.Id);
+      } else {
+        initData(null);
+      }
+    }
+  }, [locations, setValue, selectedAddresses]);
 
   const handleDateChange = (date) => {
     setStartDate(date);
@@ -80,29 +106,101 @@ const GreaseTrapForm = () => {
     setModalIsOpen(false);
   };
 
-  const { push } = useRouter();
-
   const onSubmit = (data) => {
     setValue("data", startDate);
     setValue("frequency", selectedValue);
     setValue("location", locations);
     console.log(data);
     setTimeout(() => {
-      push("/dashboard/services", undefined, { shallow: true });
+      push("/dashboard/services", undefined);
     }, 3000);
   };
 
+  async function getById(Id: number) {
+    try {
+      setLoading(true);
+      var result = await getServiceAppointmentApi(Id);
+      result.fold(
+        (error) => {
+          toast.error(error.message);
+        },
+        (data) => {
+          setModel(data);
+          initData(data);
+        }
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  async function registerService(data) {
+    try {
+      var value = FrequencyEnum[selectedValue];
+      setLoading(true);
+      var command = new AddServiceAppointmentCommand(
+        selectedAddresses.Id,
+        "Grease_Trap_Management",
+        startDate,
+        Number(value)
+      );
+      var result = await addServiceAppointmentApi(command);
+      result.fold(
+        (error) => {
+          toast.error(error.message);
+        },
+        (data) => {
+          back();
+        }
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+  async function cancelService(id: number) {
+    try {
+      setLoading(true);
+      var result = await deleteServiceAppointmentApi(id);
+      result.fold(
+        (error) => {
+          toast.error(error.message);
+        },
+        (data) => {
+          back();
+        }
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  function initData(entityModel: ServiceAppointmentEntity) {
+    if (entityModel != null) {
+
+      setValue("select", FrequencyEnum[entityModel.FrequencyType]);
+      setSelectedValue(FrequencyEnum[entityModel.FrequencyType]);
+      setValue("startDate", new Date(entityModel.StartDate));
+      setStartDate(new Date(entityModel.StartDate));
+    }
+    setLocations(selectedAddresses.LocationCompany);
+    setValue("locationCount", selectedAddresses.LocationCompany.length);
+    setValue("location", selectedAddresses.LocationCompany);
+  }
+
+
+
   return (
     <>
-      <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+      <div className={styles.form} >
         <div className={styles.formSection}>
           <label className={styles.label} htmlFor="frequency">
             Frequency:
           </label>
           <div
-            className={`${styles.selector} ${
-              errors.select && styles.inputError
-            }`}
+            className={`${styles.selector} ${errors.select && styles.inputError
+              }`}
           >
             <Controller
               name="select"
@@ -110,6 +208,7 @@ const GreaseTrapForm = () => {
               rules={{ required: true }}
               render={({ field }) => (
                 <CustomSelector
+                  initialValue={""}
                   options={options}
                   select={"frequency"}
                   selectValue={(value) => {
@@ -129,7 +228,8 @@ const GreaseTrapForm = () => {
             {locations.map((item, index) => (
               <div key={index} className={styles.fakeInput}>
                 <p>
-                  {item.data.locationName}, {item.data.lat}, {item.data.lng}
+                  {item.Name}, {item.Lat},{" "}
+                  {item.Long}
                 </p>
                 <div className={styles.inputIconButton}>
                   <button type="button">
@@ -148,9 +248,8 @@ const GreaseTrapForm = () => {
               </div>
             ))}
             <div
-              className={`${styles.dialogContainer} ${
-                errors.locationCount && styles.inputError
-              }`}
+              className={`${styles.dialogContainer} ${errors.locationCount && styles.inputError
+                }`}
             >
               <button
                 type="button"
@@ -181,9 +280,8 @@ const GreaseTrapForm = () => {
             Start date:
           </label>
           <div
-            className={`${styles.inputWithButton} ${
-              errors.startDate && styles.inputError
-            }`}
+            className={`${styles.inputWithButton} ${errors.startDate && styles.inputError
+              }`}
           >
             <Controller
               name="startDate"
@@ -219,27 +317,29 @@ const GreaseTrapForm = () => {
           </label>
           <textarea
             id="comments"
-            className={`${styles.textareaInput} ${
-              errors.comments && styles.inputError
-            }`}
+            className={`${styles.textareaInput} ${errors.comments && styles.inputError
+              }`}
             placeholder="Enter text"
-            rows="4"
+            rows={4}
             {...register("comments", { required: true })}
           />
         </div>
         <div className={styles.agreementText}>
-          <Switch active={true} />{" "}
+          <Switch active={true} onChange={() => { }} />{" "}
           <span>I agree with Terms and Conditions for this service</span>
         </div>
-        <div className={styles.submitButtons}>
+        {/* <div className={styles.submitButtons}>
           <Link className={styles.cancel} href="/dashboard/services">
-            Cansel
+            Cancel
           </Link>
           <button type="submit">
             sign up <IoLogInOutline size={24} />
           </button>
-        </div>
-      </form>
+        </div> */}
+        {prop.Id == null ?
+          <ButtonsForm nameOfButton={"Save"} status={"save"} onClick={handleSubmit(registerService)} /> :
+          <ButtonsForm nameOfButton={"Cancel Service"} status={"cancel"} onClick={() => cancelService(prop.Id)} />}
+      </div>
     </>
   );
 };

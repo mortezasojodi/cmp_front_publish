@@ -40,4 +40,18 @@ export function EditProfileButtons({ nameOfButton, iconOfButton, status }) {
     )
 }
 
-{/* <IoLogInOutline size={24} /> */ }
+export function ButtonsForm({ nameOfButton, status, onClick }) {
+    return (
+        <div className={styles.container}>
+            <Link className={styles.cancel} href="/dashboard/services">cancel</Link>
+            <button className={`${styles.signUp}  ${status === "cancel" && styles.cancelService}`} onClick={onClick}>
+                {nameOfButton}
+                {status === "cancel" ? <AiOutlineStop size={22} /> : status === "save" ? <MdDone size={24} /> : iconOfButton}
+                {/* {status === "cansel" && <Dialog isOpen={isOpen} onClose={handleCloseDialog}>
+                    <CanselServiceForm/>
+                </Dialog>} */}
+            </button>
+        </div>
+
+    )
+}

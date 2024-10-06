@@ -2,6 +2,7 @@ import { LocationCompanyEntity } from "./location_company_entity";
 
 export type OperationalAddressEntity = {
     Id?: number;
+    Name?: string;
     CompanyId?: number;
     Lat?: number;
     Long?: number;

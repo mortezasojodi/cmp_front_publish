@@ -274,7 +274,7 @@ const AddPointMap: React.FC<AddPointMapProps> = ({
           id="google-map-script"
           mapContainerStyle={containerStyle}
           center={mapCenter}
-          zoom={12}
+          zoom={17}
           onClick={handleMapClick}
         >
           {marker && (

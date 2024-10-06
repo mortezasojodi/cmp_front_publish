@@ -34,7 +34,7 @@ export default function AddNewAddressForm(porp: AddNewAddressFormProps) {
   const [operationalAddress, setoperationalAddress] = useState<OperationalAddressEntity>(null);
   const [otherAddress, setotherAddress] = useState<LocationCompanyEntity[]>([]);
   const [otherAddressCommand, setotherAddressCommand] = useState<OtherCompanyLocationCommand>(null);
-  const { isLoading, setLoading } = useLoading();
+  const { setLoading } = useLoading();
   const [openEditOtherAddressModal, setOpenEditOtherAddressModal] = useState<number>(null);
   const { back, refresh, push } = useRouter();
   const { refreshAdr } = useAddress();

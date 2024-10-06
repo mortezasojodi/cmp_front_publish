@@ -351,7 +351,7 @@ const ProfileEditForm = () => {
                   <label htmlFor={`operational-${groupIndex}`}>Operational address: </label>
                   <div className={styles.informSection}>
                     <div className={styles.fakeInput}>
-                      {operationalAddress.Address}
+                      {operationalAddress.Name}
                       <div className={styles.inputIconButton}>
                         <button type="button" onClick={() => setOpenEditOprAddressModal(operationalAddress.Id)}>
                           <LiaEdit

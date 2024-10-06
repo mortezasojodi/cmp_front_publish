@@ -43,10 +43,7 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
         }
     }
 
-    // const refreshAdr = async () => {
-    //     // Make sure to call refresh as a function
-    //     await refresh();
-    // };
+
     return (
         <AddressContext.Provider value={{ addresses, setAddresses, selectedAddresses, setSelectedAddresses, refreshAdr }}>
             {children}

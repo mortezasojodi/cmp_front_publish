@@ -404,17 +404,19 @@ const SwitcherAndCompanyInfo = ({ onNext, onBack }) => {
         </div>
 
         <div className={styles.buttonLine}>
-          <button onClick={onBack} type="submit">
+          {/* <button onClick={onBack} type="submit">
             Exit
-          </button>
+          </button> */}
+          {onBack && (
+            <button type="button" onClick={onBack}>
+              Back
+            </button>
+          )}
           <NextButton type="submit" />
+
+
         </div>
 
-        {onBack && (
-          <button type="button" onClick={onBack}>
-            Back
-          </button>
-        )}
       </form>
       {/* <Toaster /> */}
     </>
@@ -427,7 +429,7 @@ const SignUpForm = ({ currentstep }) => {
   const [formData, setFormData] = useState({});
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
-  const { push, replace } = useRouter();
+  const { push, replace, back } = useRouter();
 
   const onNextStep = (data) => {
     setFormData((prevFormData) => ({ ...prevFormData, [`step${step}`]: data }));
@@ -459,7 +461,7 @@ const SignUpForm = ({ currentstep }) => {
       <FormProvider {...methods}>
         <IoLogInOutline size={'30px'} onClick={() => AppConfig.logOut(replace)} />
         <StepIndicator step={step} />
-        {step === 1 && <SwitcherAndCompanyInfo onNext={onNextStep} />}
+        {step === 1 && <SwitcherAndCompanyInfo onNext={onNextStep} onBack={() => { back() }} />}
         {step === 2 && (
           <OperationalAddress onNext={onNextStep} onBack={onPrevStep} />
         )}

@@ -53,6 +53,7 @@ const addAdressMap: React.FC<AddPointMapProps> = ({
     watch,
   } = useForm({
     defaultValues: {
+      name: model?.Name,
       address: model?.Address,
       latitude: model?.Lat,
       longitude: model?.Long,
@@ -97,6 +98,7 @@ const addAdressMap: React.FC<AddPointMapProps> = ({
   useEffect(() => {
     if (!isOpen) {
       reset({
+        name: "",
         address: "",
         latitude: 0,
         longitude: 0,
@@ -109,6 +111,7 @@ const addAdressMap: React.FC<AddPointMapProps> = ({
       });
     } else {
       reset({
+        name: model?.Name,
         address: model?.Address,
         latitude: model?.Lat,
         longitude: model?.Long,
@@ -180,6 +183,7 @@ const addAdressMap: React.FC<AddPointMapProps> = ({
         return;
       }
       var operationalAddressCommand = new OperationalAddressCommand(
+        data.name,
         data.address,
         data.crossStreet,
         data.county,
@@ -212,6 +216,7 @@ const addAdressMap: React.FC<AddPointMapProps> = ({
         toast.error("Please fill the address correctly");
       }
       var operationalAddressCommand = new OperationalAddressCommand(
+        data.name,
         data.address,
         data.crossStreet,
         data.county,
@@ -304,7 +309,7 @@ const addAdressMap: React.FC<AddPointMapProps> = ({
             id="google-map"
             mapContainerStyle={containerStyle}
             center={mapCenter}
-            zoom={12}
+            zoom={17}
             onClick={handleMapClick}
           >
             {!isNaN(latitude) && !isNaN(longitude) && (
@@ -324,6 +329,15 @@ const addAdressMap: React.FC<AddPointMapProps> = ({
           className={styles.dialogForm}
           onSubmit={handleSubmit(handleSubmitAddress)}
         >
+          <label className={styles.smallText}>Location name:</label>
+          <input
+            className={`${styles.formInput} ${errors.name && styles.inputError
+              }`}
+            type="text"
+            defaultValue={model?.CrossStreet}
+            placeholder="Location name"
+            {...register("name", { required: true })}
+          />
           <label>Operational address:</label>
           {address ? (
             <div className={styles.fakeInput}>
@@ -430,7 +444,7 @@ const addAdressMap: React.FC<AddPointMapProps> = ({
           </div>
           <div className={styles.submitButtons}>
             <button className={styles.cancel} type="button" onClick={onCancel}>
-              Cansel
+              Cancel
             </button>
             <button type="submit">
               {model == null ? "Add ADDRESS" : "Update ADDRESS"} <GoPlusCircle size={24} />

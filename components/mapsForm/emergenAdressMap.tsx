@@ -13,6 +13,7 @@ import Modal from "react-modal";
 import CustomSelector from "../forms/customSelect/customSelect";
 
 import { IoClose } from "react-icons/io5";
+import React from "react";
 
 const libraries = ["places"];
 const containerStyle = {
@@ -125,7 +126,7 @@ export default function EmergenAdressMap({
             id="google-map"
             mapContainerStyle={containerStyle}
             center={mapCenter}
-            zoom={14}
+            zoom={17}
           >
             {address && (
               <OverlayView
@@ -199,7 +200,7 @@ export default function EmergenAdressMap({
           />
           <div className={styles.submitButtons}>
             <button className={styles.cancel} type="button" onClick={onCancel}>
-              Cansel
+              Cancel
             </button>
             <button type="submit">
               add location <GoPlusCircle size={24} />

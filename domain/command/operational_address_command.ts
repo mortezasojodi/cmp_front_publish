@@ -1,4 +1,5 @@
 export class OperationalAddressCommand {
+    Name: string;
     Address: string;
     CrossStreet: string;
     County: string;
@@ -9,6 +10,7 @@ export class OperationalAddressCommand {
     Lat: number;
     Long: number;
     constructor(
+        Name: string,
         Address: string,
         CrossStreet: string,
         County: string,
@@ -19,6 +21,7 @@ export class OperationalAddressCommand {
         Lat: number,
         Long: number
     ) {
+        this.Name = Name;
         this.Address = Address;
         this.CrossStreet = CrossStreet;
         this.County = County;

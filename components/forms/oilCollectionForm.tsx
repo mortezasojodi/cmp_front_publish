@@ -9,27 +9,33 @@ import Switch from "./switch/switch";
 import { LiaEdit } from "react-icons/lia";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import SignUpButtons from "./signUpButtons/signUpButtons";
+import SignUpButtons, { ButtonsForm } from "./signUpButtons/signUpButtons";
 import { LuCalendar } from "react-icons/lu";
 import { GoPlusCircle } from "react-icons/go";
 import { FiTrash } from "react-icons/fi";
 import CustomSelector from "./customSelect/customSelect";
 import AddPointMap from "../mapsForm/addPointMap";
 import CanselServiceForm from "./canselService/canselService";
+import { FrequencyEnum } from "@/domain/enum/frequency_enum";
+import CustomSelectorEnum from "./customSelect/enum_custom_selector";
+import { ServiceAppointmentEntity } from "@/domain/entity/service_appointment_entity";
+import { useAddress } from "../address/address_context";
+import { OperationalAddressEntity } from "@/domain/entity/operational_address_entity";
+import { OtherCompanyLocationCommand } from "@/domain/command/other_company_location_command";
+import toast from "react-hot-toast";
+import { addServiceAppointmentApi } from "@/data/api/service_appointment/add_service_appointment_api";
+import { AddServiceAppointmentCommand } from "@/domain/command/service_appointment/add_service_appointment_command";
+import { useLoading } from "../loading/loading_context";
+import { deleteServiceAppointmentApi } from "@/data/api/service_appointment/delete_service_appointment_api";
 
-export default function OilCollectionForm() {
-  const options = [
-    "1x yr",
-    "2x yr",
-    "3x yr",
-    "4x yr",
-    "6x yr",
-    "8x yr",
-    "12x yr",
-    "24x yr",
-    "26x yr",
-    "52x yr",
-  ];
+type OilCollectionFormProps = {
+  entityModel?: ServiceAppointmentEntity | null;
+};
+
+export default function OilCollectionForm(prop: OilCollectionFormProps) {
+  const options = Object.entries(FrequencyEnum).filter(([key]) => isNaN(Number(key)))
+  const { selectedAddresses, refreshAdr } = useAddress();
+
   const center = {
     lat: 32.733131,
     lng: -117.189472,
@@ -49,39 +55,38 @@ export default function OilCollectionForm() {
   const [selectedValue, setSelectedValue] = useState(null);
   const ifCansel = true;
   const [openIsTermination, setIsTermination] = useState(false);
+  const { setLoading } = useLoading();
 
-  const preloadedData = {
-    frequency: "2x yr",
-    startDate: new Date(),
-    locations: [
-      { locationName: "point 1", lat: 37.7749, lng: -122.4194 },
-      { locationName: "point 2", lat: 34.0522, lng: -118.2437 },
-    ],
-  };
+
 
   //in the future, when data is connected, the value will be transmitted globally via props
   useEffect(() => {
-    if (ifCansel) {
-      setValue("select", preloadedData.frequency);
-      setSelectedValue(preloadedData.frequency);
-      setValue("startDate", preloadedData.startDate);
-      setStartDate(preloadedData.startDate);
-      setLocations(
-        preloadedData.locations.map((loc, index) => ({
-          type: "Location",
-          data: loc,
-        }))
-      );
-      setValue("locationCount", preloadedData.locations.length);
-      setValue("location", preloadedData.locations);
+    setValue("startDate", new Date());
+    setStartDate(new Date());
+    if (selectedAddresses) {
+      initData();
     }
-  }, [ifCansel, setValue]);
+  }, [ifCansel, setValue, selectedAddresses]);
 
-  const addLocation = (type, data) => {
-    const newLocations = [...locations, { type, data }];
-    setValue("locationCount", newLocations.length);
-    setLocations(newLocations);
-    trigger("locationCount");
+  function initData() {
+    if (prop.entityModel != null) {
+
+      setValue("select", FrequencyEnum[prop.entityModel.FrequencyType]);
+      setSelectedValue(FrequencyEnum[prop.entityModel.FrequencyType]);
+      setValue("startDate", new Date(prop.entityModel.StartDate));
+      setStartDate(new Date(prop.entityModel.StartDate));
+    }
+    setLocations(selectedAddresses.LocationCompany);
+    setValue("locationCount", selectedAddresses.LocationCompany.length);
+    setValue("location", selectedAddresses.LocationCompany);
+
+  }
+
+
+  const addLocation = async (type, data) => {
+    await refreshAdr();
+    setLocations(selectedAddresses.LocationCompany);
+
   };
 
   const removeLocation = (index) => {
@@ -103,7 +108,7 @@ export default function OilCollectionForm() {
     setStartDate(date);
   };
 
-  const { push } = useRouter();
+  const { back, push } = useRouter();
 
   const onSubmit = (data) => {
     setValue("data", startDate);
@@ -111,7 +116,7 @@ export default function OilCollectionForm() {
     setValue("location", locations);
     console.log(data);
     setTimeout(() => {
-      push("/dashboard/services", undefined, { shallow: true });
+      push("/dashboard/services", undefined);
     }, 3000);
   };
 
@@ -123,34 +128,91 @@ export default function OilCollectionForm() {
     setIsTermination(false);
   };
 
-  const onCansel = () => {
-    openMessege();
+  const onSubmitForm = (data) => {
+    registerService(data);
   };
+
+
+  async function registerService(data) {
+    try {
+      var value = FrequencyEnum[selectedValue];
+      setLoading(true);
+      var command = new AddServiceAppointmentCommand(
+        selectedAddresses.Id,
+        "Cooking_Oil_Collection",
+        startDate,
+        Number(value)
+      );
+      var result = await addServiceAppointmentApi(command);
+      result.fold(
+        (error) => {
+          toast.error(error.message);
+        },
+        (data) => {
+          back();
+        }
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  async function cancelService(id: number) {
+    try {
+      setLoading(true);
+      var result = await deleteServiceAppointmentApi(id);
+      result.fold(
+        (error) => {
+          toast.error(error.message);
+        },
+        (data) => {
+          back();
+        }
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function setotherCommand(model: OperationalAddressEntity): OtherCompanyLocationCommand {
+    var command = new OtherCompanyLocationCommand(
+      "",
+      model.Lat,
+      model.Long,
+      "",
+      "",
+      model.FirstName,
+      model.LastName,
+      model.LocationPhone,
+      model.Id,
+      0,
+    );
+    return command;
+  }
 
   return (
     <>
-      <form className={styles.form} onSubmit={handleSubmit(onCansel)}>
+      <div className={styles.form} >
         <div className={styles.formSection}>
           <label htmlFor="frequency">Frequency:</label>
           <div
-            className={`${styles.selector} ${
-              errors.select && styles.inputError
-            }`}
+            className={`${styles.selector} ${errors.select && styles.inputError
+              }`}
           >
             <Controller
               name="select"
               control={control}
               rules={{ required: true }}
               render={({ field }) => (
-                <CustomSelector
+                <CustomSelectorEnum
                   options={options}
                   select="frequency"
                   selectValue={(value) => {
                     setSelectedValue(value);
                     field.onChange(value);
                   }}
-                  initialValue={preloadedData.frequency}
-                  id="frequency"
+                  initialValue={selectedValue}
                 />
               )}
             />
@@ -162,7 +224,8 @@ export default function OilCollectionForm() {
             {locations.map((item, index) => (
               <div key={index} className={styles.fakeInput}>
                 <p>
-                  {item.data.locationName}, {item.data.lat}, {item.data.lng}
+                  {item.Name}, {item.Lat},{" "}
+                  {item.Long}
                 </p>
                 <div className={styles.inputIconButton}>
                   <button type="button">
@@ -181,9 +244,8 @@ export default function OilCollectionForm() {
               </div>
             ))}
             <div
-              className={`${styles.dialogContainer} ${
-                errors.locationCount && styles.inputError
-              }`}
+              className={`${styles.dialogContainer} ${errors.locationCount && styles.inputError
+                }`}
             >
               <button
                 type="button"
@@ -200,21 +262,23 @@ export default function OilCollectionForm() {
             type="hidden"
             {...register("locationCount", { validate: (value) => value > 0 })}
           />
-          <AddPointMap
-            type={"Oil"}
-            typeOfButton={"POINT"}
-            onSubmitAddress={(data) => addLocation("Location", data)}
-            isOpen={modalIsOpen}
-            onClose={closeModal}
-            center={center}
-          />
+          {selectedAddresses &&
+            <AddPointMap
+              model={setotherCommand(selectedAddresses)}
+              oprId={selectedAddresses?.Id}
+              type={"Oil"}
+              typeOfButton={"POINT"}
+              onSubmitAddress={(data) => { addLocation("Location", data); }}
+              isOpen={modalIsOpen}
+              onClose={closeModal}
+              center={center}
+            />}
         </div>
         <div className={styles.formSection}>
           <label htmlFor="startDate">Start date:</label>
           <div
-            className={`${styles.inputWithButton} ${
-              errors.startDate && styles.inputError
-            }`}
+            className={`${styles.inputWithButton} ${errors.startDate && styles.inputError
+              }`}
           >
             <Controller
               name="startDate"
@@ -244,7 +308,7 @@ export default function OilCollectionForm() {
           </div>
         </div>
         <div className={styles.agreementText}>
-          <Switch active={true} />{" "}
+          <Switch active={true} onChange={() => { }} />{" "}
           <span>I agree with Terms and Conditions for this service</span>
         </div>
         {openIsTermination && (
@@ -253,12 +317,11 @@ export default function OilCollectionForm() {
             isOpen={openIsTermination}
           />
         )}
-        <SignUpButtons
-          nameOfButton={"Cancel Service"}
-          status="cancel"
-          Click={onCansel}
-        />
-      </form>
+
+        {prop.entityModel == null ?
+          <ButtonsForm nameOfButton={"Save"} status={"save"} onClick={handleSubmit(onSubmitForm)} /> :
+          <ButtonsForm nameOfButton={"Cancel Service"} status={"cancel"} onClick={() => cancelService(prop.entityModel.Id)} />}
+      </div>
     </>
   );
 }

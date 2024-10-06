@@ -45,8 +45,8 @@ export default function Dashboard() {
             className={styles.addressItem}
             onClick={() => handleClick(address)}
           >
-            <span>{address.Address}</span>
-            <p className={styles.addressInfo}>{address.Lat + " , " + address.Long}</p>
+            <span>{address.Name}</span>
+            <p className={styles.addressInfo}>{address.Address}</p>
           </div>
         ))}
       </div>
