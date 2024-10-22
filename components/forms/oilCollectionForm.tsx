@@ -134,27 +134,27 @@ export default function OilCollectionForm(prop: OilCollectionFormProps) {
 
 
   async function registerService(data) {
-    try {
-      var value = FrequencyEnum[selectedValue];
-      setLoading(true);
-      var command = new AddServiceAppointmentCommand(
-        selectedAddresses.Id,
-        "Cooking_Oil_Collection",
-        startDate,
-        Number(value)
-      );
-      var result = await addServiceAppointmentApi(command);
-      result.fold(
-        (error) => {
-          toast.error(error.message);
-        },
-        (data) => {
-          back();
-        }
-      );
-    } finally {
-      setLoading(false);
-    }
+    // try {
+    //   var value = FrequencyEnum[selectedValue];
+    //   setLoading(true);
+    //   var command = new AddServiceAppointmentCommand(
+    //     selectedAddresses.Id,
+    //     "Cooking_Oil_Collection",
+    //     startDate,
+    //     Number(value)
+    //   );
+    //   var result = await addServiceAppointmentApi(command);
+    //   result.fold(
+    //     (error) => {
+    //       toast.error(error.message);
+    //     },
+    //     (data) => {
+    //       back();
+    //     }
+    //   );
+    // } finally {
+    //   setLoading(false);
+    // }
   }
 
 

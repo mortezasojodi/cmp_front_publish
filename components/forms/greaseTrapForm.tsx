@@ -136,27 +136,27 @@ const GreaseTrapForm = (prop: GreaseTrapFormProps) => {
 
 
   async function registerService(data) {
-    try {
-      var value = FrequencyEnum[selectedValue];
-      setLoading(true);
-      var command = new AddServiceAppointmentCommand(
-        selectedAddresses.Id,
-        "Grease_Trap_Management",
-        startDate,
-        Number(value)
-      );
-      var result = await addServiceAppointmentApi(command);
-      result.fold(
-        (error) => {
-          toast.error(error.message);
-        },
-        (data) => {
-          back();
-        }
-      );
-    } finally {
-      setLoading(false);
-    }
+    // try {
+    //   var value = FrequencyEnum[selectedValue];
+    //   setLoading(true);
+    //   var command = new AddServiceAppointmentCommand(
+    //     selectedAddresses.Id,
+    //     "Grease_Trap_Management",
+    //     startDate,
+    //     Number(value)
+    //   );
+    //   var result = await addServiceAppointmentApi(command);
+    //   result.fold(
+    //     (error) => {
+    //       toast.error(error.message);
+    //     },
+    //     (data) => {
+    //       back();
+    //     }
+    //   );
+    // } finally {
+    //   setLoading(false);
+    // }
   }
   async function cancelService(id: number) {
     try {
