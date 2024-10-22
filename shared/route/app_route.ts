@@ -5,4 +5,6 @@ export const APP_ROUTES = {
     Dashboard: "/dashboard",
     Activation: "/activation",
     EditProfile: "/dashboard/profileEdit",
+    ShoppingCard: "/dashboard/shoppingCard",
+    Invoices: "/dashboard/invoices",
 };

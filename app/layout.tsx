@@ -6,6 +6,7 @@ import LoadingModal from "../components/loading/loading_modal";
 import { AddressProvider } from "@/components/address/address_context";
 import { Metadata } from "next";
 import { AppConfig } from "@/shared/app_config";
+import { ShoppingCardProvider } from "@/components/context_api/shopping_card_context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +25,9 @@ export default function RootLayout({ children }) {
         <AddressProvider>
           <LoadingProvider>
             <LoadingModal />
-            {children}
+            <ShoppingCardProvider>
+              {children}
+            </ShoppingCardProvider>
           </LoadingProvider>
         </AddressProvider>
         {/* </TokenProvider> */}

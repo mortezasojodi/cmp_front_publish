@@ -22,8 +22,6 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [addresses, setAddresses] = React.useState<OperationalAddressEntity[]>([]);
     const [selectedAddresses, setSelectedAddresses] = React.useState<OperationalAddressEntity>(null);
     const { replace } = useRouter();
-
-
     async function refreshAdr() {
         try {
             var result = await getAllOperationalAddress();
@@ -42,7 +40,6 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
         } finally {
         }
     }
-
 
     return (
         <AddressContext.Provider value={{ addresses, setAddresses, selectedAddresses, setSelectedAddresses, refreshAdr }}>

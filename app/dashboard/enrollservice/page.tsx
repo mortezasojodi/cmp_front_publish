@@ -2,10 +2,13 @@
 
 import Title from "@/components/forms/title/title";
 import FormFrame from "@/components/forms/formFrame/formFrame";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import EnrollServiceForm from "@/components/forms/enrollServiceForm";
+import { ServiceItemConst } from "@/shared/constants/service_item_const";
+import { useAddress } from "@/components/address/address_context";
+import TitleBack from "@/components/forms/title/title_back";
 
 export default function EnrollService() {
     return (
@@ -20,41 +23,27 @@ const EnrollServiceCm = () => {
     const query = Object.fromEntries(searchParams.entries());
     var type: string;
     var id: number | null;
+    var serviceId: string;
 
     if (query) {
         type = (query.type);
+        serviceId = query.serviceId;
         if (query.data)
             id = JSON.parse(query.data);
-
     }
 
-    function getTitle() {
-        switch (type) {
-            case "Cooking_Oil_Collection":
-                return "Cooking Oil Collection";
-            case "Grease_Trap_Management":
-                return "Grease Trap Management";
-            case "Hydro_Line_Jetting":
-                return "Hydro Line Jetting";
-            case "Kitchen_Hood_Cleaning":
-                return "Kitchen Hood Cleaning";
-            case "Power_Washing":
-                return "Power Washing";
-            case "Extra_Services":
-                return "Extra Services";
+    const { selectedAddresses } = useAddress();
+    useEffect(() => {
+    }, [selectedAddresses]);
 
-            default:
-                return "";
-        }
-    }
 
     return (
-        <>
-            <Title title={getTitle()} icon={"/broom.svg"}></Title>
+        <div className="pagecontent">
+            <TitleBack title={`${type} - ${selectedAddresses ? selectedAddresses.Name : ''}`} icon={"/broom.svg"} />
             <FormFrame>
-                <EnrollServiceForm Id={id} type={type} />
+                <EnrollServiceForm Id={id} serviceId={serviceId} />
             </FormFrame>
-        </>
+        </div>
 
     )
 }

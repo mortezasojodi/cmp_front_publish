@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import styles from "@/components/forms/greaseTrapForm.module.css";
+import styles from "@/components/forms/enrollServiceForm.module.css";
 import { useForm, Controller } from "react-hook-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,18 +21,27 @@ import { useLoading } from "../loading/loading_context";
 import { useAddress } from "../address/address_context";
 import toast from "react-hot-toast";
 import { ServiceAppointmentEntity } from "@/domain/entity/service_appointment_entity";
-import { FrequencyEnum } from "@/domain/enum/frequency_enum";
-import { AddServiceAppointmentCommand } from "@/domain/command/service_appointment/add_service_appointment_command";
-import { addServiceAppointmentApi } from "@/data/api/service_appointment/add_service_appointment_api";
 import { ButtonsForm } from "./signUpButtons/signUpButtons";
 import { deleteServiceAppointmentApi } from "@/data/api/service_appointment/delete_service_appointment_api";
 import { OperationalAddressEntity } from "@/domain/entity/operational_address_entity";
 import { OtherCompanyLocationCommand } from "@/domain/command/other_company_location_command";
 import { deleteOtherAddressApi } from "@/data/api/dashboard/other_address/delete";
+import { ServicePriceEntity } from "@/domain/entity/service_price_entity";
+import { getAllServicePriceApi } from "@/data/api/service/get_all_service_price_api";
+import ServicePriceDropDown from "./customSelect/service_price_dropdown";
+import { CreateInvoiceApi } from "@/data/api/invoice/create_invoice_api";
+
+import ShowInvoice from "@/components/Invoice/invoice_modal";
+import { InvoiceEntity } from "@/domain/entity/invoice_entity";
+import { addShoppingCard } from "@/data/api/shopping_card/add";
+import { AddShoppingCardCommand } from "@/domain/command/shopping_card/add";
+import { useCard } from "../context_api/shopping_card_context";
 
 type EnrollServiceFormProps = {
     Id?: number | null;
-    type: string
+    // type: string,
+    // serviceTypeId: string,
+    serviceId: string
 };
 
 const EnrollServiceForm = (prop: EnrollServiceFormProps) => {
@@ -40,19 +49,9 @@ const EnrollServiceForm = (prop: EnrollServiceFormProps) => {
         lat: 32.733131,
         lng: -117.189472,
     };
+    const [servicesPrice, setservicesPrice] = useState<ServicePriceEntity[]>([]);
 
-    const options = [
-        "1x yr",
-        "2x yr",
-        "3x yr",
-        "4x yr",
-        "6x yr",
-        "8x yr",
-        "12x yr",
-        "24x yr",
-        "26x yr",
-        "52x yr",
-    ];
+
     const {
         register,
         handleSubmit,
@@ -63,41 +62,56 @@ const EnrollServiceForm = (prop: EnrollServiceFormProps) => {
     } = useForm();
     const [startDate, setStartDate] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [invoiceModalIsOpen, setInvoiceModalIsOpen] = useState(false);
+    const [invoiceModel, setInvoiceModel] = useState<InvoiceEntity | null>(null);
+
     const [locations, setLocations] = useState([]);
-    const [selectedValue, setSelectedValue] = useState(null);
+    const [selectedValue, setSelectedValue] = useState<ServicePriceEntity | null>(null);
     const { setLoading } = useLoading();
     const { selectedAddresses, refreshAdr } = useAddress();
     const { back, push } = useRouter();
-
+    var { itemsCard, refreshCard } = useCard();
     const [model, setModel] = useState<ServiceAppointmentEntity>(null);
 
     const addLocation = (type, data) => {
-        // const newLocations = [...locations, { type, data }];
-        // setValue("locationCount", newLocations.length);
-        // setLocations(newLocations);
-        // trigger("locationCount");
         refreshAdr();
     };
 
     const removeLocation = (id) => {
         deleteOtherAddress(id);
-        // const newLocations = locations.filter((_, i) => i !== index);
-        // setValue("locationCount", newLocations.length);
-        // setLocations(newLocations);
-        // trigger("locationCount");
     };
 
     useEffect(() => {
         setValue("locationCount", locations.length);
         setValue("location", locations);
         if (selectedAddresses) {
-            if (prop.Id) {
-                getById(prop.Id);
-            } else {
-                initData(null);
-            }
+            fetchServicePrice();
+
         }
-    }, [locations, setValue, selectedAddresses]);
+    }, [selectedAddresses]);
+
+
+    async function fetchServicePrice() {
+        try {
+            setLoading(true);
+            var result = await getAllServicePriceApi(prop.serviceId);
+            result.fold(
+                (error) => {
+                },
+                (data) => {
+                    setservicesPrice(data);
+                    if (prop.Id) {
+                        getById(prop.Id, data);
+                    } else {
+                        initData(null, data);
+                    }
+                }
+            );
+        } finally {
+            setLoading(false);
+        }
+    }
+
 
     const handleDateChange = (date) => {
         setStartDate(date);
@@ -112,17 +126,7 @@ const EnrollServiceForm = (prop: EnrollServiceFormProps) => {
         setModalIsOpen(false);
     };
 
-    // const onSubmit = (data) => {
-    //     setValue("data", startDate);
-    //     setValue("frequency", selectedValue);
-    //     setValue("location", locations);
-    //     console.log(data);
-    //     setTimeout(() => {
-    //         push("/dashboard/services", undefined);
-    //     }, 3000);
-    // };
-
-    async function getById(Id: number) {
+    async function getById(Id: number, services: ServicePriceEntity[]) {
         try {
             setLoading(true);
             var result = await getServiceAppointmentApi(Id);
@@ -132,7 +136,7 @@ const EnrollServiceForm = (prop: EnrollServiceFormProps) => {
                 },
                 (data) => {
                     setModel(data);
-                    initData(data);
+                    initData(data, services);
                 }
             );
         } finally {
@@ -143,20 +147,22 @@ const EnrollServiceForm = (prop: EnrollServiceFormProps) => {
 
     async function registerService(data) {
         try {
-            var value = FrequencyEnum[selectedValue];
             setLoading(true);
-            var command = new AddServiceAppointmentCommand(
+            var command = new AddShoppingCardCommand(
                 selectedAddresses.Id,
-                prop.type,
+                // prop.type,
+                selectedValue._id,
                 startDate,
-                Number(value)
+                (selectedValue.name),
+                prop.serviceId,
             );
-            var result = await addServiceAppointmentApi(command);
+            var result = await addShoppingCard(command);
             result.fold(
                 (error) => {
                     toast.error(error.message);
                 },
                 (data) => {
+                    refreshCard();
                     back();
                 }
             );
@@ -164,6 +170,11 @@ const EnrollServiceForm = (prop: EnrollServiceFormProps) => {
             setLoading(false);
         }
     }
+
+    const openInvoice = (data) => {
+        setInvoiceModel(data);
+        setInvoiceModalIsOpen(true);
+    };
     async function cancelService(id: number) {
         try {
             setLoading(true);
@@ -182,11 +193,11 @@ const EnrollServiceForm = (prop: EnrollServiceFormProps) => {
     }
 
 
-    function initData(entityModel: ServiceAppointmentEntity) {
+    function initData(entityModel: ServiceAppointmentEntity, services: ServicePriceEntity[]) {
         if (entityModel != null) {
 
-            setValue("select", FrequencyEnum[entityModel.FrequencyType]);
-            setSelectedValue(FrequencyEnum[entityModel.FrequencyType]);
+            setValue("select", services.find(p => p._id === entityModel.ServicePriceId));
+            setSelectedValue(services.find(p => p._id === entityModel.ServicePriceId));
             setValue("startDate", new Date(entityModel.StartDate));
             setStartDate(new Date(entityModel.StartDate));
         }
@@ -231,6 +242,11 @@ const EnrollServiceForm = (prop: EnrollServiceFormProps) => {
 
     return (
         <>
+            <ShowInvoice
+                isOpen={invoiceModalIsOpen}
+                onClose={() => { setInvoiceModalIsOpen(false) }}
+                model={invoiceModel}
+            />
             <div className={styles.form} >
                 <div className={styles.formSection}>
                     <label className={styles.label} htmlFor="frequency">
@@ -245,9 +261,9 @@ const EnrollServiceForm = (prop: EnrollServiceFormProps) => {
                             control={control}
                             rules={{ required: true }}
                             render={({ field }) => (
-                                <CustomSelector
+                                servicesPrice && <ServicePriceDropDown
                                     initialValue={selectedValue}
-                                    options={options}
+                                    options={servicesPrice}
                                     select={"frequency"}
                                     selectValue={(value) => {
                                         setSelectedValue(value);
@@ -351,32 +367,19 @@ const EnrollServiceForm = (prop: EnrollServiceFormProps) => {
                         </div>
                     </div>
                 </div>
-                {/* <div className={styles.formSection}>
-                    <label htmlFor="comments" className={styles.label}>
-                        {" "}
-                        Location Comments:
-                    </label>
-                    <textarea
-                        id="comments"
-                        className={`${styles.textareaInput} ${errors.comments && styles.inputError
-                            }`}
-                        placeholder="Enter text"
-                        rows={4}
-                        {...register("comments", { required: true })}
-                    />
-                </div> */}
+
                 <div className={styles.agreementText}>
-                    <Switch active={true} onChange={() => { }} />{" "}
-                    <span>I agree with Terms and Conditions for this service</span>
+                    <div className={styles.textWrapper}>
+                        <Switch active={true} onChange={() => { }} />{" "}
+                        <span>I agree with Terms and Conditions for this service</span>
+                    </div>
+                    {selectedValue && (
+                        <div className={styles.price}>
+                            ${selectedValue.amount} <span className={styles.currency}> / per service</span>
+                        </div>
+                    )}
                 </div>
-                {/* <div className={styles.submitButtons}>
-          <Link className={styles.cancel} href="/dashboard/services">
-            Cancel
-          </Link>
-          <button type="submit">
-            sign up <IoLogInOutline size={24} />
-          </button>
-        </div> */}
+
                 {prop.Id == null ?
                     <ButtonsForm nameOfButton={"Save"} status={"save"} onClick={handleSubmit(registerService)} /> :
                     <ButtonsForm nameOfButton={"Cancel Service"} status={"cancel"} onClick={() => cancelService(prop.Id)} />}

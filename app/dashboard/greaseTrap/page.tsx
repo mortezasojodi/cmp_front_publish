@@ -24,12 +24,12 @@ const GreaseTrapCm = () => {
         id = JSON.parse(query.data);
     }
     return (
-        <>
+        <div className="pagecontent">
             <Title title={"Grease Trap Management"} icon={"/broom.svg"}></Title>
             <FormFrame>
                 <GreaseTrapForm Id={id} />
             </FormFrame>
-        </>
+        </div>
 
     )
 }

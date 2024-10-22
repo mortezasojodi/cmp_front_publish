@@ -30,12 +30,12 @@ const AddNewAddressFormCm = () => {
         model = JSON.parse(query.data);
     }
     return (
-        <>
+        <div className="pagecontent">
             <TitleBack title={"Add New Address"} icon={"/emergency_serc_icon.svg"}></TitleBack>
             <FormFrame>
                 <AddNewAddressForm entityModel={model} />
             </FormFrame>
-        </>
+        </div>
 
     )
 }

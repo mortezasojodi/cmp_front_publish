@@ -34,7 +34,6 @@ export default function Layout({ children }) {
     setLoading(true);
     try {
       await refreshAdr();
-
     } finally {
       setLoading(false);
     }

@@ -5,6 +5,7 @@
   .form {
     display: flex;
     gap: 16px;
+    
     flex-direction: column;
   }
   
@@ -163,6 +164,7 @@
     justify-content: flex-start;
     padding-left: 166px;
     gap: 8px;
+    justify-content: space-between; /* This pushes the price to the end */
   }
   
   .submitButtons {
@@ -211,3 +213,21 @@
         padding-left: 0;
     }
   }
+  .textWrapper {
+    display: flex;
+    align-items: center;
+}
+
+
+  .price {
+    font-size: 17px;
+    font-weight: bold;
+    color: #333;
+    display: inline-flex;
+    align-items: center;
+}
+.currency {
+    margin-left: 5px;
+    font-size: 14px;
+    color: #555;
+}

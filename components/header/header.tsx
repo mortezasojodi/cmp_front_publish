@@ -9,6 +9,7 @@ import Link from "next/link";
 import { AppConfig } from "@/shared/app_config";
 import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/shared/route/app_route";
+import ShoppingCardIcon from "../dashboard/shoppingCard/shopping_card_icon";
 
 
 
@@ -25,6 +26,7 @@ export default function Header({ toggleMenu }) {
             <div className={styles.navigSec}>
                 <div className={styles.changeButtonDiv}>
                     {/* <ButtonChangeUser/> */}
+                    <ShoppingCardIcon />
                     <button className={styles.notifiButton}>
                         <Image src="/heroicons_bell.svg" alt="notifications" width={'24'} height={'24'} />
                     </button>

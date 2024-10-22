@@ -5,6 +5,8 @@ export type ServiceAppointmentEntity = {
     OperationalAddressId: number;
     LocationCompanyId: number;
     ServiceTypeId: number;
+    ServicePriceId: string;
+    ServiceCrmId: string;
     StartDate: string;
-    FrequencyType: number;
+    FrequencyType: string;
 };

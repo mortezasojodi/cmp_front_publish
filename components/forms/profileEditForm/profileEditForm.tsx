@@ -46,7 +46,6 @@ const ProfileEditForm = () => {
     secondaryFirstName: company?.SecondaryFirstName,
     secondaryLastName: company?.SecondaryLastName,
     secondaryPhone: company?.SecondaryPhoneNumber,
-
     addresses: operationalAddress || null
   };
 
@@ -54,7 +53,6 @@ const ProfileEditForm = () => {
   useEffect(() => {
     fetchCompany();
     fetchLocation();
-
   }, []);
 
   async function fetchCompany() {
@@ -67,7 +65,6 @@ const ProfileEditForm = () => {
         setValue("secondaryPhone", data.SecondaryPhoneNumber);
         setCompanyEntity(data)
         setState(StateStatus.Success)
-
       }
     );
   }
@@ -86,7 +83,6 @@ const ProfileEditForm = () => {
 
   }
 
-
   const center = {
     lat: 34.063473,
     lng: -118.242753
@@ -96,8 +92,8 @@ const ProfileEditForm = () => {
     defaultValues: initialEditData
   });
 
-  const [data, setData] = useState(initialEditData);
-  const [modalIsOpen, setModalIsOpen] = useState(initialEditData.addresses.map(() => ({ operational: false, oilContainer: false, greaseTrap: false })));
+  // const [data, setData] = useState(initialEditData);
+  // const [modalIsOpen, setModalIsOpen] = useState(initialEditData.addresses.map(() => ({ operational: false, oilContainer: false, greaseTrap: false })));
 
   const [modalIsOpenNew, setModalIsOpenNew] = useState({
     operational: false,

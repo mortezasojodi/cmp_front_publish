@@ -20,6 +20,9 @@
   padding: 0;
   box-sizing: border-box;
 }
+.pagecontent{
+  padding: 40px;
+}
 
 body {
   height: 100%;
